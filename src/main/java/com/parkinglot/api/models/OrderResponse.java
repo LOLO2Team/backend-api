@@ -6,6 +6,18 @@ import com.parkinglot.api.domain.Order;
 import java.util.Objects;
 
 public class OrderResponse {
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public Long getOrderID() {
+        return orderID;
+    }
+
     private String vehicleNumber;
 
     private String orderStatus;

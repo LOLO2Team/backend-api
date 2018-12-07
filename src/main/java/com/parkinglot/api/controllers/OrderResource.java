@@ -22,7 +22,7 @@ public class OrderResource {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping(produces = {"application/json"})
     public ResponseEntity<OrderResponse[]> getAllOrder(){
         final OrderResponse[] orders  = orderRepository.findAll().stream()
                 .map(OrderResponse::create)
