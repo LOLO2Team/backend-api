@@ -16,6 +16,13 @@ script:
   - ./gradlew clean
   - ./gradlew test
   - ./gradlew bootJar -x test
+ deploy:
+  provider: heroku
+  api_key:
+    secure: 744fff7d-5617-49c1-a691-e0aa1473a891
+  app: parking-lot-backend
+  on:
+    repo: LOLO2Team/backend-api
 notifications:
   webhooks:
     on_success: change  # options: [always|never|change] default: always
