@@ -12,7 +12,7 @@ public class Order {
     @Column(name = "vehicle_number", length = 8, unique = true, nullable = false)
     private String vehicleNumber;
 
-    @Column(name = "order_status", nullable = false)
+    @Column(name = "order_status", nullable = false, columnDefinition="Decimal(10,2) default '100.00'")
     private String orderStatus;
 
     //Constructor

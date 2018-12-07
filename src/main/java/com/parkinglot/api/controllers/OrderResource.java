@@ -25,6 +25,7 @@ public class OrderResource {
     @GetMapping(produces = {"application/json"})
     public ResponseEntity<OrderResponse[]> getAllOrder(){
         final OrderResponse[] orders  = orderRepository.findAll().stream()
+                .filter(order -> order.getOrderStatus().equals("pending"))
                 .map(OrderResponse::create)
                 .toArray(OrderResponse[]::new);
         return ResponseEntity.ok(orders);
