@@ -1,4 +1,4 @@
-package com.oocl.web.sampleWebApp;
+package com.parkinglot.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.servlet.MvcResult;

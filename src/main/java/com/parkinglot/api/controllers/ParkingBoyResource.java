@@ -1,4 +1,4 @@
-package com.oocl.web.sampleWebApp.controllers;
+package com.parkinglot.api.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
