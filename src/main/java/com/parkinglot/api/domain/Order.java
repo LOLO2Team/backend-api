@@ -12,8 +12,11 @@ public class Order {
     @Column(name = "vehicle_number", length = 8, unique = true, nullable = false)
     private String vehicleNumber;
 
-    @Column(name = "order_status", nullable = false, columnDefinition="Decimal(10,2) default '100.00'")
+    @Column(name = "order_status", nullable = false, columnDefinition="varchar default 'pending'")
     private String orderStatus;
+
+    @Column(name = "parking_lot_id")
+    private Long parkingLotId;
 
     //Constructor
     protected Order(){}
@@ -45,5 +48,17 @@ public class Order {
 
     public void setOrderID(Long orderID) {
         this.id = orderID;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getParkingLotId() {
+        return parkingLotId;
+    }
+
+    public void setParkingLotId(Long parkingLotId) {
+        this.parkingLotId = parkingLotId;
     }
 }
