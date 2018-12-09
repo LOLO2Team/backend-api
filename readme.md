@@ -26,8 +26,22 @@
         "name": "TestBoy456"
     }...
 ]
-```  
+```
+
+#### Park a car:
+1. Given: a parking order with vehicle number
+2. When: PUT to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
+3. Then: update the order status to "parking" and set a parking_lot_id to order
 ---------------
+
+
+#### fetch a car:
+1. Given: a parking order with vehicle number
+2. When: DELETE to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
+3. Then: update the order status to "fetched"
+---------------
+
+
 ### `/parkinglots`
 
 #### Create a new parking lot:
@@ -62,26 +76,41 @@
 
 #### Create a new order:
 1. Given: a parking order with vehicle number
-2. When: POST to `oders` with body:
+2. When: POST to `orders` with body:
 ```$json
 {
 	"vehicleNumber" : "test123"
 }
 ```  
-3. Then: should return 201 created
+3. Then: should return 201 created and save a new order with orderStatus="pending"
 
-#### Get all orders with 'pending' status:
-1. When: GET from `/parkinglots`
+#### Get all orders:
+1. When: GET from `/orders`
 2. Then: should return 200 with body:
 ```$json
 [
     {
         "vehicleNumber": "test123",
         "orderID": 1
+        "status": "pending"
     },
     {
-        "vehicleNumber": "test456",
+        "vehicleNumber": "test999",
         "orderID": 2
+        "status": "parking"
+    }...
+]
+```
+
+#### Get orders by status (pending / parking / fetched / cancel):
+1. When: GET from `/orders?status=pending`
+2. Then: should return 200 with body:
+```$json
+[
+    {
+        "vehicleNumber": "test123",
+        "orderID": 1
+        "status": "pending"
     }...
 ]
 ```  
