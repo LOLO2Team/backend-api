@@ -73,6 +73,8 @@ public class ParkingBoyResource {
 
         order.get().setOrderStatus(ORDER_STATUS_PARKING);
         order.get().setParkingLotId(parkingLotId);
+        orderRepository.save(order.get());
+        orderRepository.flush();
 
         return ResponseEntity.ok(OrderResponse.create( order.get()));
     }
