@@ -22,7 +22,8 @@ public class OrderResource {
 
     @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<OrderResponse> postOrder(@RequestBody Order order) {
-        orderRepository.save(order);
+        Order orderWithStatus= new Order(order.getVehicleNumber());
+        orderRepository.save(orderWithStatus);
         orderRepository.flush();
         return new ResponseEntity(HttpStatus.CREATED);
     }

@@ -10,10 +10,6 @@ public class OrderResponse {
         return vehicleNumber;
     }
 
-    public String getOrderStatus() {
-        return orderStatus;
-    }
-
     public Long getOrderID() {
         return orderID;
     }

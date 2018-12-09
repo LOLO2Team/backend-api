@@ -12,7 +12,7 @@ public class Order {
     @Column(name = "vehicle_number", length = 8, unique = true, nullable = false)
     private String vehicleNumber;
 
-    @Column(name = "order_status", nullable = false, columnDefinition="varchar default 'pending'")
+    @Column(name = "order_status", nullable = false)
     private String orderStatus;
 
     @Column(name = "parking_lot_id")
@@ -23,6 +23,9 @@ public class Order {
 
     public Order(String vehicleNumber) {
         this.vehicleNumber = vehicleNumber;
+        //Cannot set default value in h2-db schema
+        //Default value -> "pending"
+        this.orderStatus = "pending";
     }
     //--------------------------------------------------------------------------
 
