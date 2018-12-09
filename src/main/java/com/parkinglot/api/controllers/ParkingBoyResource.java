@@ -12,6 +12,7 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.*;
 
+import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_FETCHED;
 import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PARKING;
 import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PENDING;
 
@@ -73,6 +74,41 @@ public class ParkingBoyResource {
 
         order.get().setOrderStatus(ORDER_STATUS_PARKING);
         order.get().setParkingLotId(parkingLotId);
+        orderRepository.save(order.get());
+        orderRepository.flush();
+
+        return ResponseEntity.ok(OrderResponse.create( order.get()));
+    }
+
+
+    @DeleteMapping(value = "/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}")
+    public ResponseEntity<OrderResponse> fetchCarToParkingLot(
+            @PathVariable Long employeeId,
+            @PathVariable Long parkingLotId,
+            @PathVariable Long orderId ) {
+
+//      uncomment after parkingboy sign up finished
+//        Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
+//        if (!parkingBoy.isPresent()) {
+//            return ResponseEntity.status(404).header("errorMessage","parking boy id:"+orderId+" not found").build();
+//        }
+
+//      uncomment after parkinglot  select finished
+//        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
+//        if (!parkingLot.isPresent()) {
+//            return ResponseEntity.status(404).header("errorMessage","parking lot id:"+parkingLotId+" not found").build();
+//        }
+
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (!order.isPresent()) {
+            return ResponseEntity.status(404).header("errorMessage","parking order id:"+orderId+" not found").build();
+        }
+
+        if(!order.get().getOrderStatus().equals(ORDER_STATUS_PARKING)){
+            return ResponseEntity.status(400).header("errorMessage","parking order id:"+orderId+" status is not parking").build();
+        }
+
+        order.get().setOrderStatus(ORDER_STATUS_FETCHED);
         orderRepository.save(order.get());
         orderRepository.flush();
 

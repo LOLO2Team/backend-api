@@ -29,7 +29,7 @@ public class OrderResource {
     }
 
     @GetMapping(produces = {"application/json"})
-    public ResponseEntity<OrderResponse[]> getPendingOrder(@RequestParam(value = "status", required = false) String status) {
+    public ResponseEntity<OrderResponse[]> getOrders(@RequestParam(value = "status", required = false) String status) {
         OrderResponse[] orders;
         if (status == null) {
             orders = orderRepository.findAll().stream()
