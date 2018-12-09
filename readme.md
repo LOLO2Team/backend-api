@@ -31,14 +31,14 @@ Root api: https://parking-lot-backend.herokuapp.com/
 ```
 
 #### Park a car:
-1. Given: a parking order with vehicle number
+1. Given:  employeeId, parkinglotid, orderid of order with status "pending"
 2. When: PUT to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
 3. Then: update the order status to "parking" and set a parking_lot_id to order
 ---------------
 
 
 #### fetch a car:
-1. Given: a parking order with vehicle number
+1. Given: employeeId, parkinglotid, orderid of order with status "parking"
 2. When: DELETE to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
 3. Then: update the order status to "fetched"
 ---------------
