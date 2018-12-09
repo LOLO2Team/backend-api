@@ -22,18 +22,25 @@ public class OrderResource {
 
     @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<OrderResponse> postOrder(@RequestBody Order order) {
-        Order orderWithStatus= new Order(order.getVehicleNumber());
+        Order orderWithStatus = new Order(order.getVehicleNumber());
         orderRepository.save(orderWithStatus);
         orderRepository.flush();
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @GetMapping(produces = {"application/json"})
-    public ResponseEntity<OrderResponse[]> getAllOrder() {
-        final OrderResponse[] orders = orderRepository.findAll().stream()
-                .filter(order -> order.getOrderStatus().equals(ORDER_STATUS_PENDING))
-                .map(OrderResponse::create)
-                .toArray(OrderResponse[]::new);
+    public ResponseEntity<OrderResponse[]> getPendingOrder(@RequestParam(value = "status", required = false) String status) {
+        OrderResponse[] orders;
+        if (status == null) {
+            orders = orderRepository.findAll().stream()
+                    .map(OrderResponse::create)
+                    .toArray(OrderResponse[]::new);
+        }else {
+            orders = orderRepository.findAll().stream()
+                    .filter(order -> order.getOrderStatus().equals(status))
+                    .map(OrderResponse::create)
+                    .toArray(OrderResponse[]::new);
+        }
         return ResponseEntity.ok(orders);
     }
 
