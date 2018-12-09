@@ -1,6 +1,8 @@
 ## Guide to use back-end api
 
-### `/parkingboys`
+Root api: https://parking-lot-backend.herokuapp.com/
+
+### `https://parking-lot-backend.herokuapp.com/parkingboys`
 
 #### Create a new parking boy:
 1. Given: a parking boy name
@@ -40,9 +42,7 @@
 2. When: DELETE to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
 3. Then: update the order status to "fetched"
 ---------------
-
-
-### `/parkinglots`
+### `https://parking-lot-backend.herokuapp.com/parkinglots`
 
 #### Create a new parking lot:
 1. Given: a parking lot with capacity
@@ -72,7 +72,7 @@
 ]
 ```  
 ----------
-### `/orders`
+### `https://parking-lot-backend.herokuapp.com/orders`
 
 #### Create a new order:
 1. Given: a parking order with vehicle number
