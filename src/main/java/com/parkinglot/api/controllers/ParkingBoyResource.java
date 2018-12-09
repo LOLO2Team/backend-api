@@ -56,10 +56,11 @@ public class ParkingBoyResource {
 //            return ResponseEntity.status(404).header("errorMessage","parking boy id:"+orderId+" not found").build();
 //        }
 
-        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
-        if (!parkingLot.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage","parking lot id:"+parkingLotId+" not found").build();
-        }
+//      uncomment after parkinglot  select finished
+//        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
+//        if (!parkingLot.isPresent()) {
+//            return ResponseEntity.status(404).header("errorMessage","parking lot id:"+parkingLotId+" not found").build();
+//        }
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
