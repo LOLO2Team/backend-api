@@ -20,18 +20,27 @@ public class OrderResponse {
 
     private Long orderID;
 
-    public static OrderResponse create(String vehicleNumber, Long orderID) {
+    public static OrderResponse create(String vehicleNumber, Long orderID, String orderStatus) {
         Objects.requireNonNull(vehicleNumber);
         Objects.requireNonNull(orderID);
 
         final OrderResponse response = new OrderResponse();
         response.setVehicleNumber(vehicleNumber);
         response.setOrderID(orderID);
+        response.setOrderStatus(orderStatus);
         return response;
     }
 
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     public static OrderResponse create(Order entity) {
-        return create(entity.getVehicleNumber(), entity.getOrderID());
+        return create(entity.getVehicleNumber(), entity.getOrderID(), entity.getOrderStatus());
     }
 
     public void setVehicleNumber(String vehicleNumber) {
