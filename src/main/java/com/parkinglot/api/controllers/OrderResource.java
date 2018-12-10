@@ -46,6 +46,7 @@ public class OrderResource {
     final static String ORDER_STATUS_FETCHED = "fetched";
     final static String ORDER_STATUS_CANCEL = "cancel";
 
+
     @CrossOrigin
     @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<OrderResponse> postOrder(@RequestBody Order order) {
@@ -139,13 +140,7 @@ public class OrderResource {
     @CrossOrigin
     @PatchMapping(value = "/{orderId}")
     public ResponseEntity<OrderResponse> createNewFetchRequest(
-        @PathVariable Long orderId, @RequestBody long employeeId) {
-
-        Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
-        if (!parkingBoy.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking boy id:" + employeeId + " not found")
-                .build();
-        }
+        @PathVariable Long orderId) {
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
