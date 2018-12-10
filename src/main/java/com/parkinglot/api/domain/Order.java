@@ -18,8 +18,15 @@ public class Order {
     @Column(name = "parking_lot_id")
     private Long parkingLotId;
 
+    @Column(name = "parker_employee_id")
+    private Long parkerEmployeeId;
+
+    @Column(name = "fetcher_employee_id")
+    private Long fetcherEmployeeId;
+
     //Constructor
-    protected Order(){}
+    protected Order() {
+    }
 
     public Order(String vehicleNumber) {
         this.vehicleNumber = vehicleNumber;
@@ -64,4 +71,21 @@ public class Order {
     public void setParkingLotId(Long parkingLotId) {
         this.parkingLotId = parkingLotId;
     }
+
+    public Long getParkerEmployeeId() {
+        return parkerEmployeeId;
+    }
+
+    public void setParkerEmployeeId(Long parkerEmployeeId) {
+        this.parkerEmployeeId = parkerEmployeeId;
+    }
+
+    public Long getFetcherEmployeeId() {
+        return fetcherEmployeeId;
+    }
+
+    public void setFetcherEmployeeId(Long fetcherEmployeeId) {
+        this.fetcherEmployeeId = fetcherEmployeeId;
+    }
+
 }
