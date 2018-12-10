@@ -16,12 +16,17 @@ public class ParkingLot {
     private long id;
     private int capacity;
     private int reservedSpace;
+
+    @Column(name = "parking_lot_name")
+    private String parkingLotName;
+
     private Long employeeId;
 
     public ParkingLot() {
     }
 
-    public ParkingLot(long id, int capacity) {
+    public ParkingLot(String parkingLotName, int capacity) {
+        this.parkingLotName = parkingLotName;
         this.capacity = capacity;
     }
 
@@ -51,5 +56,13 @@ public class ParkingLot {
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public String getParkingLotName() {
+        return parkingLotName;
+    }
+
+    public void setParkingLotName(String parkingLotName) {
+        this.parkingLotName = parkingLotName;
     }
 }
