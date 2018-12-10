@@ -7,9 +7,18 @@ import java.util.*;
 
 public class ParkingLotResponse {
     private Long parkingLotId;
+    private String parkingLotName;
     private int capacity;
     private int reservedSpace;
     private Long employeeId;
+
+    public String getParkingLotName() {
+        return parkingLotName;
+    }
+
+    public void setParkingLotName(String parkingLotName) {
+        this.parkingLotName = parkingLotName;
+    }
 
     public void setParkingLotId(Long parkingLotId) {
         this.parkingLotId = parkingLotId;
@@ -19,11 +28,12 @@ public class ParkingLotResponse {
         this.capacity = capacity;
     }
 
-    public static ParkingLotResponse create(Long parkingLotId, int capacity, int reservedSpace, Long employeeId) {
+    public static ParkingLotResponse create(Long parkingLotId , String parkingLotName, int capacity, int reservedSpace, Long employeeId) {
         Objects.requireNonNull(parkingLotId);
-
+        Objects.requireNonNull(parkingLotName);
         final ParkingLotResponse response = new ParkingLotResponse();
         response.setParkingLotId(parkingLotId);
+        response.setParkingLotName(parkingLotName);
         response.setCapacity(capacity);
         response.setReservedSpace(reservedSpace);
         response.setEmployeeId(employeeId);
@@ -47,7 +57,7 @@ public class ParkingLotResponse {
     }
 
     public static ParkingLotResponse create(ParkingLot entity) {
-        return create(entity.getId(), entity.getCapacity(), entity.getReservedSpace(), entity.getEmployeeId());
+        return create(entity.getId(), entity.getParkingLotName(), entity.getCapacity(), entity.getReservedSpace(), entity.getEmployeeId());
     }
 
     public Long getEmployeeId() {

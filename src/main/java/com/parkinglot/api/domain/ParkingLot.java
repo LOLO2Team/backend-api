@@ -14,15 +14,27 @@ public class ParkingLot {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+    @Column(name = "parking_lot_name")
+    private String parkingLotName;
     private int capacity;
     private int reservedSpace;
     private Long employeeId;
 
+
     public ParkingLot() {
     }
 
-    public ParkingLot(long id, int capacity) {
+    public ParkingLot(String parkingLotName, int capacity) {
+        this.parkingLotName = parkingLotName;
         this.capacity = capacity;
+    }
+
+    public String getParkingLotName() {
+        return parkingLotName;
+    }
+
+    public void setParkingLotName(String parkingLotName) {
+        this.parkingLotName = parkingLotName;
     }
 
     public long getId() {
