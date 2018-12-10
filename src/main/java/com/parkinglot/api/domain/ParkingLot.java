@@ -18,6 +18,10 @@ public class ParkingLot {
     private String parkingLotName;
     private int capacity;
     private int reservedSpace;
+
+    @Column(name = "parking_lot_name")
+    private String parkingLotName;
+
     private Long employeeId;
 
 
@@ -63,5 +67,13 @@ public class ParkingLot {
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public String getParkingLotName() {
+        return parkingLotName;
+    }
+
+    public void setParkingLotName(String parkingLotName) {
+        this.parkingLotName = parkingLotName;
     }
 }
