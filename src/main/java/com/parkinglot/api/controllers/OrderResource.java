@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
 import java.util.*;
+import java.util.stream.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -121,6 +122,18 @@ public class OrderResource {
         if (!parkingLot.isPresent()) {
             return ResponseEntity.status(404)
                 .header("errorMessage", "parking lot id:" + parkingLotId + " not found")
+                .build();
+        }
+
+        int carCountInParkingLot = orderRepository.findAll()
+            .stream()
+            .filter(order -> order.getParkingLotId() == parkingLotId)
+            .filter(order -> order.getOrderStatus().equals(ORDER_STATUS_PARKED))
+            .collect(Collectors.toList()).size();
+
+        if(parkingLot.get().getCapacity() >= carCountInParkingLot){
+            return ResponseEntity.status(404)
+                .header("errorMessage", "parking lot id:" + parkingLotId + " is full")
                 .build();
         }
 
