@@ -7,6 +7,7 @@ import com.parkinglot.api.domain.ParkingBoyRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.OrderResponse;
+import com.parkinglot.api.models.OrderTicketResponse;
 import com.parkinglot.api.models.ParkingBoyInteractRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,6 @@ import java.util.*;
 public class OrderResource {
     @Autowired
     private OrderRepository orderRepository;
-
     @Autowired
     private ParkingBoyRepository parkingBoyRepository;
     @Autowired
@@ -45,7 +45,6 @@ public class OrderResource {
     final static String ORDER_STATUS_FETCHING = "fetching";
     final static String ORDER_STATUS_FETCHED = "fetched";
     final static String ORDER_STATUS_CANCEL = "cancel";
-
 
     @CrossOrigin
     @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
@@ -73,6 +72,15 @@ public class OrderResource {
         return ResponseEntity.ok(orders);
     }
 
+
+    @CrossOrigin
+    @GetMapping(value = "/{orderId}", produces = {"application/json"})
+    public ResponseEntity<OrderTicketResponse> getOrderById(@PathVariable Long orderId) {
+        OrderTicketResponse orderTicketResponse = OrderTicketResponse.create(orderRepository.findById(orderId).get());
+
+        return ResponseEntity.ok(orderTicketResponse);
+    }
+
     @CrossOrigin
     @PutMapping(value = "/{orderId}/employeeId/{employeeId}")
     public ResponseEntity<OrderResponse> grabOrder(@PathVariable Long orderId, @PathVariable Long employeeId) {
@@ -93,7 +101,7 @@ public class OrderResource {
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PENDING)) {
             return ResponseEntity.status(400)
-                .header("errorMessage", "parking order id:" + orderId + " status is not "+ORDER_STATUS_PENDING)
+                .header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_PENDING)
                 .build();
         }
 
@@ -125,7 +133,7 @@ public class OrderResource {
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PARKING)) {
             return ResponseEntity.status(400)
-                .header("errorMessage", "parking order id:" + orderId + " status is not "+ORDER_STATUS_PARKING)
+                .header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKING)
                 .build();
         }
 
@@ -148,7 +156,7 @@ public class OrderResource {
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PARKED)) {
-            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not "+ORDER_STATUS_PARKED).build();
+            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKED).build();
         }
 
         order.get().setOrderStatus(ORDER_STATUS_FETCHING);
@@ -169,7 +177,8 @@ public class OrderResource {
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_FETCHING)) {
-            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not "+ORDER_STATUS_FETCHING).build();
+            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_FETCHING)
+                .build();
         }
 
         order.get().setOrderStatus(ORDER_STATUS_FETCHED);
