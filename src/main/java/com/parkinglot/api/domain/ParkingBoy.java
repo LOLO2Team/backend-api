@@ -10,6 +10,7 @@ public class ParkingBoy {
     @Column(name = "id", unique = true, nullable = false)
     private long id;
 
+    @Column(name = "name", length = 32)
     private String name;
 
     public String getName() {

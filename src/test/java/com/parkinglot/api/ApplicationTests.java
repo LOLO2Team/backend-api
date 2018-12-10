@@ -18,13 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static com.parkinglot.api.WebTestUtil.*;
+import static com.parkinglot.api.WebTestUtil.getContentAsObject;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,6 +35,9 @@ public class ApplicationTests {
 
     @Autowired
     private ParkingLotRepository parkingLotRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private MockMvc mvc;
@@ -103,51 +105,66 @@ public class ApplicationTests {
     @Test
     public void should_get_parking_lots() throws Exception {
         // Given
+        final ParkingBoy parkingBoy = new ParkingBoy("TestBoy");
+        parkingBoyRepository.save(parkingBoy);
+        parkingBoyRepository.flush();
         final ParkingLot parkinglot = parkingLotRepository.save(new ParkingLot("Testing parking lot",10));
+        parkingLotRepository.flush();
+
+        final ParkingBoy parkingBoyFromDB = parkingBoyRepository.findByName("TestBoy");
+        final ParkingLot parkingLotFromDB = parkingLotRepository.findByParkingLotName("Testing parking lot");
+
+        final Long employeeId = parkingBoyFromDB.getId();
+        // When
+
+        final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
+                .put("/parkinglots/"+parkingLotFromDB.getId()+"/employeeId/"+employeeId))
+                .andReturn();
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .get("/parkinglots"))
+                .get("/parkinglots?employeeId="+employeeId))
                 .andReturn();
 
         // Then
+        assertEquals(201, putResult.getResponse().getStatus());
         assertEquals(200, result.getResponse().getStatus());
 
-        final ParkingLotResponse[] parkingLots = getContentAsObject(result, ParkingLotResponse[].class);
+        final ParkingLot updatedParkingLot = parkingLotRepository.findByParkingLotName("Testing parking lot");
 
-        assertEquals(1, parkingLots.length);
-        assertEquals("Testing parking lot", parkingLots[0].getParkingLotName());
-        assertEquals(10, parkingLots[0].getCapacity());
+        assertEquals("Testing parking lot", updatedParkingLot.getParkingLotName());
+        assertEquals(10, updatedParkingLot.getCapacity());
+        assertEquals(employeeId, updatedParkingLot.getEmployeeId());
     }
-//
-//    @Test
-//    public void should_post_append_parking_lot_to_DB() throws Exception {
-//        // Given
-//        String json = "{\"parkingLotID\" : \"TestPark123\", \"capacity\" : 10}";
-//
-//        // When
-//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-//                .post("/parkinglots")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(json))
-//                .andReturn();
-//
-//        // Then
-//        assertEquals(201, result.getResponse().getStatus());
-//
-//        List<ParkingLot> parkingLots = parkingLotRepository.findAll();
-//
-//        // Should not use getOne() because it only get a proxy object from cache
-//        // Should use findOne() instead
-//
-//        Optional<ParkingLot> actualParkingLot = parkingLotRepository.findById(1L);
-//
-//        final ParkingLotResponse parkingLot = ParkingLotResponse.create(actualParkingLot.get());
-//
-//        assertEquals(1, parkingLots.size());
-//        assertEquals("TestPark123", parkingLot.getParkingLotID());
-//        assertEquals(10, parkingLot.getCapacity());
-//    }
+
+    @Test
+    public void should_post_append_parking_lot_to_DB() throws Exception {
+        // Given
+        String json = "{\"parkingLotName\" : \"TestPark123\", \"capacity\" : 10}";
+
+        // When
+        final MvcResult result = mvc.perform(MockMvcRequestBuilders
+                .post("/parkinglots")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andReturn();
+
+        // Then
+        assertEquals(201, result.getResponse().getStatus());
+
+        List<ParkingLot> parkingLots = parkingLotRepository.findAll();
+
+        // Should not use getOne() because it only get a proxy object from cache
+        // Should use findOne() instead
+
+        Optional<ParkingLot> actualParkingLot = parkingLotRepository.findById(1L);
+
+        final ParkingLotResponse parkingLot = ParkingLotResponse.create(actualParkingLot.get());
+
+        assertEquals(1, parkingLots.size());
+        assertEquals("TestPark123", parkingLot.getParkingLotName());
+        assertEquals(10, parkingLot.getCapacity());
+    }
 //
 //    @Test
 //    public void should_throws_exception_when_parkingLotID_is_too_long(){
