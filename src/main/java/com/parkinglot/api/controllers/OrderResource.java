@@ -125,18 +125,6 @@ public class OrderResource {
                 .build();
         }
 
-        int carCountInParkingLot = orderRepository.findAll()
-            .stream()
-            .filter(order -> order.getParkingLotId() == parkingLotId)
-            .filter(order -> order.getOrderStatus().equals(ORDER_STATUS_PARKED))
-            .collect(Collectors.toList()).size();
-
-        if(parkingLot.get().getCapacity() >= carCountInParkingLot){
-            return ResponseEntity.status(404)
-                .header("errorMessage", "parking lot id:" + parkingLotId + " is full")
-                .build();
-        }
-
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
             return ResponseEntity.status(404)
