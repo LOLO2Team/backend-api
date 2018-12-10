@@ -16,19 +16,18 @@ public class ParkingLot {
     private long id;
     private int capacity;
     private int reservedSpace;
+    private Long employeeId;
 
     public ParkingLot() {
     }
 
     public ParkingLot(long id, int capacity) {
-        this.id = id;
         this.capacity = capacity;
     }
 
     public long getId() {
         return id;
     }
-
 
     public int getCapacity() {
         return capacity;
@@ -44,5 +43,13 @@ public class ParkingLot {
 
     public void setReservedSpace(int reservedSpace) {
         this.reservedSpace = reservedSpace;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 }

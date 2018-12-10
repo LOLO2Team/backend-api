@@ -1,4 +1,4 @@
-INSERT INTO parking_lot (id, capacity, reserved_space) VALUES (0, 50, 0);
+INSERT INTO parking_lot (id, capacity, reserved_space, employee_id) VALUES (0, 50, 0, 0);
 INSERT INTO parking_boy (id, name) VALUES (0, 'Locki');
 
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99994, 12345678, 'pending', null, null);
