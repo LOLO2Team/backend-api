@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ApplicationTests {
+public class ParkingLotTests {
     @Autowired
     private ParkingBoyRepository parkingBoyRepository;
 
@@ -41,66 +41,6 @@ public class ApplicationTests {
 
     @Autowired
     private MockMvc mvc;
-
-    @Test
-    public void should_get_parking_boys() throws Exception {
-        // Given
-        final ParkingBoy boy = parkingBoyRepository.save(new ParkingBoy("boy"));
-
-        // When
-        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .get("/parkingboys"))
-                .andReturn();
-
-        // Then
-        assertEquals(200, result.getResponse().getStatus());
-
-        final ParkingBoyResponse[] parkingBoys = getContentAsObject(result, ParkingBoyResponse[].class);
-
-        assertEquals(1, parkingBoys.length);
-        assertEquals("boy", parkingBoys[0].getName());
-    }
-
-    @Test
-    public void should_throws_exception_when_employeeID_lenth_too_long(){
-        //Given A parking boy with employeeID too long
-        final String employeeID = "IdThatISTooLonggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
-        ParkingBoy parkingBoy = new ParkingBoy(employeeID);
-        //When save into repository should throw exception
-        AssertHelper.assertThrows(Exception.class, () ->{
-            parkingBoyRepository.save(parkingBoy);
-            parkingBoyRepository.flush();
-        });
-    }
-
-    @Test
-    public void should_post_append_parking_boy_to_repo() throws Exception {
-        // Given
-        String json = "{\"name\" : \"test123\"}";
-
-        // When
-        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .post("/parkingboys")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andReturn();
-
-        // Then
-        assertEquals(201, result.getResponse().getStatus());
-
-        List<ParkingBoy> parkingBoys = parkingBoyRepository.findAll();
-
-        // Should not use getOne() because it only get a proxy object from cache
-        // Should use findOne() instead
-
-        Optional<ParkingBoy> actualBoy = parkingBoyRepository.findById(1L);
-
-        final ParkingBoyResponse parkingBoy = ParkingBoyResponse.create(actualBoy.get());
-
-        assertEquals(1, parkingBoys.size());
-        assertEquals("test123", parkingBoy.getName());
-    }
-
 
     @Test
     public void should_get_parking_lots() throws Exception {
@@ -165,6 +105,8 @@ public class ApplicationTests {
         assertEquals("TestPark123", parkingLot.getParkingLotName());
         assertEquals(10, parkingLot.getCapacity());
     }
+
+
 //
 //    @Test
 //    public void should_throws_exception_when_parkingLotID_is_too_long(){
