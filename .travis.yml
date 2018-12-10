@@ -14,8 +14,6 @@ cache:
     - $HOME/.m2  
 script:
   - ./gradlew clean
-  - ./gradlew test
-  - ./gradlew bootJar -x test
   
 deploy:
   provider: heroku
