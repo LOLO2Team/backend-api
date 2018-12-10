@@ -37,8 +37,7 @@ public class ParkingLotResource {
     @GetMapping
     public ResponseEntity<List<ParkingLotResponse>> getAvailableParkingLots(@RequestParam(value = "employeeId") Long employeeId) {
         final List<ParkingLotResponse> parkingLots = parkingLotRepository
-            .findAll().stream()
-            .filter(parkingLot -> parkingLot.getEmployeeId() != null && parkingLot.getEmployeeId() == employeeId)
+            .findByEmployeeId(employeeId).stream()
             .filter(parkingLot -> hasSpace(parkingLot))
             .map(parkingLot -> ParkingLotResponse
                 .create(parkingLot.getId(), parkingLot.getParkingLotName(), parkingLot.getCapacity(), parkingLot.getReservedSpace(),
@@ -81,14 +80,9 @@ public class ParkingLotResource {
     }
 
     private boolean hasSpace(ParkingLot parkingLot) {
-        int carCountInParkingLot = orderRepository.findAll()
-            .stream()
-            .filter(order -> order.getParkingLotId() != null && order.getParkingLotId() == parkingLot.getId())
-            .filter(order -> order.getOrderStatus().equals(ORDER_STATUS_PARKED))
-            .collect(Collectors.toList())
+        int carCountInParkingLot = orderRepository
+            .findByParkingLotIdAndOrderStatus(parkingLot.getId(), ORDER_STATUS_PARKED)
             .size();
-        System.out.println(carCountInParkingLot);
-        System.out.println(parkingLot.getCapacity());
         return parkingLot.getCapacity() > carCountInParkingLot;
     }
 }

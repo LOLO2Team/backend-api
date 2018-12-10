@@ -7,4 +7,6 @@ import java.util.*;
 
 @Repository
 public interface ParkingLotRepository extends JpaRepository<ParkingLot, Long> {
+
+    List<ParkingLot> findByEmployeeId(long employeeId);
 }
