@@ -7,4 +7,5 @@ import java.util.*;
 
 @Repository
 public interface ParkingLotRepository extends JpaRepository<ParkingLot, Long> {
+    ParkingLot findByParkingLotName(String name);
 }
