@@ -18,11 +18,8 @@ public class Order {
     @Column(name = "parking_lot_id")
     private Long parkingLotId;
 
-    @Column(name = "parker_employee_id")
-    private Long parkerEmployeeId;
-
-    @Column(name = "fetcher_employee_id")
-    private Long fetcherEmployeeId;
+    @Column(name = "employee_id")
+    private Long employeeId;
 
     //Constructor
     protected Order() {
@@ -72,20 +69,11 @@ public class Order {
         this.parkingLotId = parkingLotId;
     }
 
-    public Long getParkerEmployeeId() {
-        return parkerEmployeeId;
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setParkerEmployeeId(Long parkerEmployeeId) {
-        this.parkerEmployeeId = parkerEmployeeId;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
-
-    public Long getFetcherEmployeeId() {
-        return fetcherEmployeeId;
-    }
-
-    public void setFetcherEmployeeId(Long fetcherEmployeeId) {
-        this.fetcherEmployeeId = fetcherEmployeeId;
-    }
-
 }
