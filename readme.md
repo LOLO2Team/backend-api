@@ -30,17 +30,6 @@ Root api: https://parking-lot-backend.herokuapp.com/
 ]
 ```
 
-#### Park a car:
-1. Given:  employeeId, parkinglotid, orderid of order with status "pending"
-2. When: PUT to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
-3. Then: update the order status to "parking" and set a parking_lot_id to order
----------------
-
-
-#### fetch a car:
-1. Given: employeeId, parkinglotid, orderid of order with status "parking"
-2. When: DELETE to `parkingboys/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}`
-3. Then: update the order status to "fetched"
 ---------------
 ### `https://parking-lot-backend.herokuapp.com/parkinglots`
 
@@ -54,8 +43,8 @@ Root api: https://parking-lot-backend.herokuapp.com/
 ```  
 3. Then: should return 201 created
 
-#### Get all parking lot:
-1. When: GET from `/parkinglots`
+#### Get all parking lot by employeeId:
+1. When: GET from `/parkinglots?employeeId={employeeId}`
 2. Then: should return 200 with body:
 ```$json
 [
@@ -70,7 +59,12 @@ Root api: https://parking-lot-backend.herokuapp.com/
         "reservedSpace": 0
     }...
 ]
-```  
+```
+
+#### Assign parking lot to a parking boy:
+1. When: PUT from `/parkinglots/{parkingLotId}`
+2. Then: should return 200 with body:
+
 ----------
 ### `https://parking-lot-backend.herokuapp.com/orders`
 
@@ -102,7 +96,7 @@ Root api: https://parking-lot-backend.herokuapp.com/
 ]
 ```
 
-#### Get orders by status (pending / parking / fetched / cancel):
+#### Get orders by status (pending / parking / fetched ...):
 1. When: GET from `/orders?status=pending`
 2. Then: should return 200 with body:
 ```$json
@@ -113,4 +107,32 @@ Root api: https://parking-lot-backend.herokuapp.com/
         "status": "pending"
     }...
 ]
-```  
+```
+
+(for parkingboy)
+#### Grab order:
+1. Given:  employeeId, orderid of order with status "pending"
+2. When: PUT to `{orderId}/employeeId/{employeeId}`
+3. Then: update the order status to "parking" and set a employeeId to order
+---------------
+
+(for parkingboy)
+#### Finish parking the car:
+1. Given:  parkingLotId, orderid of order with status "parking"
+2. When: PUT to `{orderId}/parkingLotId/{parkingLotId}`
+3. Then: update the order status to "parked" and set a parkingLotId to order
+---------------
+
+(for customer)
+#### Request fetching car:
+1. Given: orderid of order with status "parked"
+2. When: PATCH to `{orderId}`
+3. Then: update the order status to "fetching"
+---------------
+
+(for parkingboy)
+#### Finish fetching car:
+1. Given: orderid of order with status "parked"
+2. When: DELETE to `{orderId}`
+3. Then: update the order status to "fetched"
+---------------
