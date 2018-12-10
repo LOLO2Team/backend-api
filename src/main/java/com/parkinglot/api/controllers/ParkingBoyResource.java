@@ -1,20 +1,19 @@
 package com.parkinglot.api.controllers;
 
-import com.parkinglot.api.domain.*;
-import com.parkinglot.api.models.OrderResponse;
+import com.parkinglot.api.domain.ParkingBoy;
+import com.parkinglot.api.domain.ParkingBoyRepository;
+import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.ParkingBoyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
 import java.net.*;
-import java.util.*;
-import java.util.stream.*;
-
-import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_FETCHED;
-import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PARKING;
-import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PENDING;
 
 @RestController
 @RequestMapping("/parkingboys")
@@ -25,15 +24,13 @@ public class ParkingBoyResource {
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
     private EntityManager entityManager;
 
     @GetMapping
     public ResponseEntity<ParkingBoyResponse[]> getAll() {
         final ParkingBoyResponse[] parkingBoys = parkingBoyRepository.findAll().stream()
-                .map(ParkingBoyResponse::create)
-                .toArray(ParkingBoyResponse[]::new);
+            .map(ParkingBoyResponse::create)
+            .toArray(ParkingBoyResponse[]::new);
         return ResponseEntity.ok(parkingBoys);
     }
 
@@ -45,73 +42,4 @@ public class ParkingBoyResource {
         return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping(value = "/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}")
-    public ResponseEntity<OrderResponse> parkCarToParkingLot(
-            @PathVariable Long employeeId,
-            @PathVariable Long parkingLotId,
-            @PathVariable Long orderId ) {
-
-//      uncomment after parkingboy sign up finished
-//        Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
-//        if (!parkingBoy.isPresent()) {
-//            return ResponseEntity.status(404).header("errorMessage","parking boy id:"+orderId+" not found").build();
-//        }
-
-//      uncomment after parkinglot  select finished
-//        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
-//        if (!parkingLot.isPresent()) {
-//            return ResponseEntity.status(404).header("errorMessage","parking lot id:"+parkingLotId+" not found").build();
-//        }
-
-        Optional<Order> order = orderRepository.findById(orderId);
-        if (!order.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage","parking order id:"+orderId+" not found").build();
-        }
-
-        if(!order.get().getOrderStatus().equals(ORDER_STATUS_PENDING)){
-            return ResponseEntity.status(400).header("errorMessage","parking order id:"+orderId+" status is not pending").build();
-        }
-
-        order.get().setOrderStatus(ORDER_STATUS_PARKING);
-        order.get().setParkingLotId(parkingLotId);
-        orderRepository.save(order.get());
-        orderRepository.flush();
-
-        return ResponseEntity.ok(OrderResponse.create( order.get()));
-    }
-
-
-    @DeleteMapping(value = "/{employeeId}/parkinglots/{parkingLotId}/orders/{orderId}")
-    public ResponseEntity<OrderResponse> fetchCarToParkingLot(
-            @PathVariable Long employeeId,
-            @PathVariable Long parkingLotId,
-            @PathVariable Long orderId ) {
-
-//      uncomment after parkingboy sign up finished
-//        Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
-//        if (!parkingBoy.isPresent()) {
-//            return ResponseEntity.status(404).header("errorMessage","parking boy id:"+orderId+" not found").build();
-//        }
-
-//      uncomment after parkinglot  select finished
-//        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
-//        if (!parkingLot.isPresent()) {
-//            return ResponseEntity.status(404).header("errorMessage","parking lot id:"+parkingLotId+" not found").build();
-//        }
-
-        Optional<Order> order = orderRepository.findById(orderId);
-        if (!order.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage","parking order id:"+orderId+" not found").build();
-        }
-
-        if(!order.get().getOrderStatus().equals(ORDER_STATUS_PARKING)){
-            return ResponseEntity.status(400).header("errorMessage","parking order id:"+orderId+" status is not parking").build();
-        }
-
-        order.get().setOrderStatus(ORDER_STATUS_FETCHED);
-        orderRepository.save(order.get());
-        orderRepository.flush();
-
-        return ResponseEntity.ok(OrderResponse.create( order.get()));
-    }
 }
