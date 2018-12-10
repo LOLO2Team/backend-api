@@ -6,28 +6,27 @@ import com.parkinglot.api.domain.Order;
 import java.util.Objects;
 
 public class OrderResponse {
-    public String getVehicleNumber() {
-        return vehicleNumber;
-    }
-
-    public Long getOrderID() {
-        return orderID;
-    }
 
     private String vehicleNumber;
 
     private String orderStatus;
 
-    private Long orderID;
+    private Long orderId;
 
-    public static OrderResponse create(String vehicleNumber, Long orderID, String orderStatus) {
+    private Long parkingLotId;
+
+    private Long employeeId;
+
+    public static OrderResponse create(String vehicleNumber, Long orderId, String orderStatus, Long parkingLotId, Long employeeId) {
         Objects.requireNonNull(vehicleNumber);
-        Objects.requireNonNull(orderID);
+        Objects.requireNonNull(orderId);
 
         final OrderResponse response = new OrderResponse();
         response.setVehicleNumber(vehicleNumber);
-        response.setOrderID(orderID);
+        response.setOrderId(orderId);
         response.setOrderStatus(orderStatus);
+        response.setParkingLotId(parkingLotId);
+        response.setEmployeeId(employeeId);
         return response;
     }
 
@@ -40,14 +39,38 @@ public class OrderResponse {
     }
 
     public static OrderResponse create(Order entity) {
-        return create(entity.getVehicleNumber(), entity.getOrderID(), entity.getOrderStatus());
+        return create(entity.getVehicleNumber(), entity.getOrderID(), entity.getOrderStatus(),entity.getParkingLotId(),entity.getEmployeeId());
     }
 
     public void setVehicleNumber(String vehicleNumber) {
         this.vehicleNumber = vehicleNumber;
     }
 
-    public void setOrderID(Long orderID) {
-        this.orderID = orderID;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public Long getParkingLotId() {
+        return parkingLotId;
+    }
+
+    public void setParkingLotId(Long parkingLotId) {
+        this.parkingLotId = parkingLotId;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 }
