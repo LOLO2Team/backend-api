@@ -47,8 +47,8 @@ public class ParkingLotResource {
         return ResponseEntity.ok(parkingLots);
     }
 
-    @PutMapping(value = "/{parkingLotId}", produces = {"application/json"})
-    public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @RequestBody Long employeeId) {
+    @PutMapping(value = "/{parkingLotId}/employeeId/{employeeId}", produces = {"application/json"})
+    public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @PathVariable Long employeeId) {
 
         Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
@@ -68,7 +68,7 @@ public class ParkingLotResource {
         if (parkingLotRepository.save(parkingLot.get()) != null) {
             return ResponseEntity.created(URI.create("/parkinglots/" + parkingLot.get().getId())).build();
         }
-
+        parkingLotRepository.flush();
         return ResponseEntity.badRequest().build();
     }
 
