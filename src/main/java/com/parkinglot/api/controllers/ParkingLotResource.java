@@ -8,6 +8,7 @@ import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ public class ParkingLotResource {
     @Autowired
     private ParkingBoyRepository parkingBoyRepository;
 
+    @CrossOrigin
     @GetMapping
     public ResponseEntity<List<ParkingLotResponse>> getAvailableParkingLots(@RequestParam(value = "employeeId") Long employeeId) {
         final List<ParkingLotResponse> parkingLots = parkingLotRepository
@@ -46,6 +48,7 @@ public class ParkingLotResource {
         return ResponseEntity.ok(parkingLots);
     }
 
+    @CrossOrigin
     @PutMapping(value = "/{parkingLotId}/employeeId/{employeeId}", produces = {"application/json"})
     public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @PathVariable Long employeeId) {
 
@@ -71,6 +74,7 @@ public class ParkingLotResource {
         return ResponseEntity.badRequest().build();
     }
 
+    @CrossOrigin
     @PostMapping
     public ResponseEntity<String> add(@RequestBody ParkingLot parkingLot) {
         if (parkingLotRepository.save(parkingLot) != null) {

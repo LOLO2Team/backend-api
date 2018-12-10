@@ -6,6 +6,7 @@ import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.ParkingBoyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ public class ParkingBoyResource {
     @Autowired
     private EntityManager entityManager;
 
+    @CrossOrigin
     @GetMapping
     public ResponseEntity<ParkingBoyResponse[]> getAll() {
         final ParkingBoyResponse[] parkingBoys = parkingBoyRepository.findAll().stream()
@@ -34,6 +36,7 @@ public class ParkingBoyResource {
         return ResponseEntity.ok(parkingBoys);
     }
 
+    @CrossOrigin
     @PostMapping(consumes = {"application/json"})
     public ResponseEntity<String> add(@RequestBody ParkingBoy parkingBoy) {
         if (parkingBoyRepository.save(parkingBoy) != null) {
