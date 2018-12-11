@@ -1,11 +1,12 @@
 package com.parkinglot.api;
 
+import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.Order;
 import com.parkinglot.api.domain.OrderRepository;
-import com.parkinglot.api.domain.ParkingBoy;
-import com.parkinglot.api.domain.ParkingBoyRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
+import com.parkinglot.api.domain.RoleName;
 import com.parkinglot.api.models.OrderResponse;
 import com.parkinglot.api.models.OrderTicketResponse;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class OrderResourceTests {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private ParkingBoyRepository parkingBoyRepository;
+    private EmployeeRepository employeeRepository;
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
@@ -111,7 +112,7 @@ public class OrderResourceTests {
     public void should_update_status_from_pending_to_parking_and_assign_the_parking_boy_to_order() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        ParkingBoy newParkingBoy = parkingBoyRepository.save(new ParkingBoy("boy"));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
@@ -131,7 +132,7 @@ public class OrderResourceTests {
     public void should_update_status_from_parking_to_parked_and_assign_the_parking_lot_id_to_order() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        ParkingBoy newParkingBoy = parkingBoyRepository.save(new ParkingBoy("boy"));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy",RoleName.ROLE_PARKING_CLERK));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
 
         // When
@@ -160,7 +161,7 @@ public class OrderResourceTests {
     public void should_update_status_from_parked_to_parking() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        ParkingBoy newParkingBoy = parkingBoyRepository.save(new ParkingBoy("boy"));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy",RoleName.ROLE_PARKING_CLERK));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
 
         // When
@@ -190,7 +191,7 @@ public class OrderResourceTests {
     public void should_update_status_from_fetching_to_fetched() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        ParkingBoy newParkingBoy = parkingBoyRepository.save(new ParkingBoy("boy"));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy",RoleName.ROLE_PARKING_CLERK));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
 
         // When

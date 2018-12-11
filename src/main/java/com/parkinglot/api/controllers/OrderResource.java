@@ -1,14 +1,13 @@
 package com.parkinglot.api.controllers;
 
+import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.Order;
 import com.parkinglot.api.domain.OrderRepository;
-import com.parkinglot.api.domain.ParkingBoy;
-import com.parkinglot.api.domain.ParkingBoyRepository;
+import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.OrderResponse;
 import com.parkinglot.api.models.OrderTicketResponse;
-import com.parkinglot.api.models.ParkingBoyInteractRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
 import java.util.*;
-import java.util.stream.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -34,7 +32,7 @@ public class OrderResource {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private ParkingBoyRepository parkingBoyRepository;
+    private EmployeeRepository employeeRepository;
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
@@ -84,7 +82,7 @@ public class OrderResource {
     @PutMapping(value = "/{orderId}/employeeId/{employeeId}")
     public ResponseEntity<OrderResponse> grabOrder(@PathVariable Long orderId, @PathVariable Long employeeId) {
 
-        Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
+        Optional<Employee> parkingBoy = employeeRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
             return ResponseEntity.status(404).header("errorMessage", "parking boy id:" + employeeId + " not found").build();
         }

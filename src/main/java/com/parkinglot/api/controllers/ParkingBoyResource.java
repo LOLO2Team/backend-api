@@ -1,7 +1,7 @@
 package com.parkinglot.api.controllers;
 
-import com.parkinglot.api.domain.ParkingBoy;
-import com.parkinglot.api.domain.ParkingBoyRepository;
+import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.ParkingBoyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.net.*;
 public class ParkingBoyResource {
 
     @Autowired
-    private ParkingBoyRepository parkingBoyRepository;
+    private EmployeeRepository employeeRepository;
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
@@ -30,7 +30,7 @@ public class ParkingBoyResource {
     @CrossOrigin
     @GetMapping
     public ResponseEntity<ParkingBoyResponse[]> getAll() {
-        final ParkingBoyResponse[] parkingBoys = parkingBoyRepository.findAll().stream()
+        final ParkingBoyResponse[] parkingBoys = employeeRepository.findAll().stream()
             .map(ParkingBoyResponse::create)
             .toArray(ParkingBoyResponse[]::new);
         return ResponseEntity.ok(parkingBoys);
@@ -38,9 +38,9 @@ public class ParkingBoyResource {
 
     @CrossOrigin
     @PostMapping(consumes = {"application/json"})
-    public ResponseEntity<String> add(@RequestBody ParkingBoy parkingBoy) {
-        if (parkingBoyRepository.save(parkingBoy) != null) {
-            return ResponseEntity.created(URI.create("/parkingboys/" + parkingBoy.getId())).build();
+    public ResponseEntity<String> add(@RequestBody Employee employee) {
+        if (employeeRepository.save(employee) != null) {
+            return ResponseEntity.created(URI.create("/parkingboys/" + employee.getId())).build();
         }
         return ResponseEntity.badRequest().build();
     }

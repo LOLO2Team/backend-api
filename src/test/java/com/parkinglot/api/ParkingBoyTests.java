@@ -1,8 +1,9 @@
 package com.parkinglot.api;
 
-import com.parkinglot.api.domain.ParkingBoy;
-import com.parkinglot.api.domain.ParkingBoyRepository;
+import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
+import com.parkinglot.api.domain.RoleName;
 import com.parkinglot.api.models.ParkingBoyResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ParkingBoyTests {
     @Autowired
-    private ParkingBoyRepository parkingBoyRepository;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private ParkingLotRepository parkingLotRepository;
@@ -42,12 +43,12 @@ public class ParkingBoyTests {
     @Test
     public void should_get_parking_boys() throws Exception {
         // Given
-        final ParkingBoy boy = parkingBoyRepository.save(new ParkingBoy("boy"));
+        final Employee boy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .get("/parkingboys"))
-                .andReturn();
+            .get("/parkingboys"))
+            .andReturn();
 
         // Then
         assertEquals(200, result.getResponse().getStatus());
@@ -59,61 +60,67 @@ public class ParkingBoyTests {
     }
 
     @Test
-    public void should_throws_exception_when_employeeID_lenth_too_long() {
+    public void should_throws_exception_when_employee_name_lenth_too_long() {
         //Given A parking boy with employeeID too long
-        final String employeeID = "IdThatISTooLonggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
-        ParkingBoy parkingBoy = new ParkingBoy(employeeID);
+        final String employeeName =
+            "IdThatISTooLonggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
+        Employee employee = new Employee(employeeName, RoleName.ROLE_PARKING_CLERK);
         //When save into repository should throw exception
         AssertHelper.assertThrows(Exception.class, () -> {
-            parkingBoyRepository.save(parkingBoy);
-            parkingBoyRepository.flush();
+            employeeRepository.save(employee);
+            employeeRepository.flush();
         });
     }
 
     @Test
     public void should_post_append_parking_boy_to_repo() throws Exception {
         // Given
-        String json = "{\"name\" : \"test123\"}";
+        String json = "{\"name\":\"boy\","
+            + "\"username\":\"noonecare\","
+            + "\"email\":\"noonecare\","
+            + "\"phone\":\"noonecare\","
+            + "\"password\":\"noonecare\","
+            + "\"role\":\""+RoleName.ROLE_PARKING_CLERK.toString()+"\"}";
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .post("/parkingboys")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andReturn();
+            .post("/parkingboys")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andReturn();
 
         // Then
         assertEquals(201, result.getResponse().getStatus());
 
-        List<ParkingBoy> parkingBoys = parkingBoyRepository.findAll();
+        List<Employee> parkingBoys = employeeRepository.findAll();
 
         // Should not use getOne() because it only get a proxy object from cache
         // Should use findOne() instead
 
-        Optional<ParkingBoy> actualBoy = parkingBoyRepository.findById(1L);
+        Optional<Employee> actualBoy = employeeRepository.findById(1L);
 
         final ParkingBoyResponse parkingBoy = ParkingBoyResponse.create(actualBoy.get());
 
         assertEquals(1, parkingBoys.size());
-        assertEquals("test123", parkingBoy.getName());
+        assertEquals("boy", parkingBoy.getName());
     }
 
-//    @Test
-//    public void should_post_return_404() throws Exception {
-//        // Given
-//        String json = "{\"WrongName\" : \"test123\"}";
-//
-//        // When
-//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-//                .post("/parkingboys")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(json))
-//                .andReturn();
-//
-//        // Then
-//        AssertHelper.assertThrows(Exception.class, () -> {
-//            parkingBoyRepository.save(parkingBoy);
-//            parkingBoyRepository.flush();
-//        });
-//    }
+    //    @Test
+    //    public void should_post_return_404() throws Exception {
+    //        // Given
+    //        String json = "{\"WrongName\" : \"test123\"}";
+    //
+    //        // When
+    //        final MvcResult result = mvc.perform(MockMvcRequestBuilders
+    //                .post("/parkingboys")
+    //                .contentType(MediaType.APPLICATION_JSON)
+    //                .content(json))
+    //                .andReturn();
+    //
+    //        // Then
+    //        AssertHelper.assertThrows(Exception.class, () -> {
+    //            employeeRepository.save(parkingBoy);
+    //            employeeRepository.flush();
+    //        });
+    //    }
 }

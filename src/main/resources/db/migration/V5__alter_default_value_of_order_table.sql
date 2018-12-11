@@ -1,2 +1,0 @@
-ALTER TABLE parking_order
-ALTER ORDER_STATUS SET DEFAULT 'pending';

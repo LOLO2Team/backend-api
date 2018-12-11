@@ -1,9 +1,10 @@
 package com.parkinglot.api;
 
-import com.parkinglot.api.domain.ParkingBoy;
-import com.parkinglot.api.domain.ParkingBoyRepository;
+import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
+import com.parkinglot.api.domain.RoleName;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ParkingLotTests {
     @Autowired
-    private ParkingBoyRepository parkingBoyRepository;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private ParkingLotRepository parkingLotRepository;
@@ -42,13 +43,13 @@ public class ParkingLotTests {
     @Test
     public void should_get_parking_lots() throws Exception {
         // Given
-        final ParkingBoy parkingBoy = new ParkingBoy("TestBoy");
-        parkingBoyRepository.save(parkingBoy);
-        parkingBoyRepository.flush();
+        final Employee employee = new Employee("TestBoy", RoleName.ROLE_PARKING_CLERK);
+        employeeRepository.save(employee);
+        employeeRepository.flush();
         final ParkingLot parkinglot = parkingLotRepository.save(new ParkingLot("Testing parking lot",10));
         parkingLotRepository.flush();
 
-        final ParkingBoy parkingBoyFromDB = parkingBoyRepository.findByName("TestBoy");
+        final Employee parkingBoyFromDB = employeeRepository.findByNameAndRole("TestBoy", RoleName.ROLE_PARKING_CLERK.toString());
         final ParkingLot parkingLotFromDB = parkingLotRepository.findByParkingLotName("Testing parking lot");
 
         final Long employeeId = parkingBoyFromDB.getId();
@@ -144,8 +145,8 @@ public class ParkingLotTests {
 //        // Given
 //        String employee_id = "Test123";
 //        String json = "{\"parkingLotID\" : \"TestPark123\", \"capacity\" : 10}";
-//        parkingBoyRepository.save(new ParkingBoy(employee_id));
-//        parkingBoyRepository.flush();
+//        employeeRepository.save(new Employee(employee_id));
+//        employeeRepository.flush();
 //        parkingLotRepository.save(new ParkingLot("TestPark123",10));
 //        parkingLotRepository.flush();
 //
@@ -163,9 +164,9 @@ public class ParkingLotTests {
 //
 //        ParkingLot actualParkingLot = parkingLots.get(0);
 //
-//        List<ParkingBoy> parkingBoys = parkingBoyRepository.findAll().stream().filter(parkingBoy -> parkingBoy.getEmployeeId().equals("Test123")).collect(Collectors.toList());
+//        List<Employee> parkingBoys = employeeRepository.findAll().stream().filter(parkingBoy -> parkingBoy.getEmployeeId().equals("Test123")).collect(Collectors.toList());
 //
-//        ParkingBoy actualParkingBoy = parkingBoys.get(0);
+//        Employee actualParkingBoy = parkingBoys.get(0);
 //
 //        final ParkingLotResponse parkingLot = ParkingLotResponse.create(actualParkingLot);
 //
@@ -180,8 +181,8 @@ public class ParkingLotTests {
 //    @Test
 //    public void should_get_parking_boys_with_id() throws Exception {
 //        // Given
-//        final ParkingBoy boy = parkingBoyRepository.save(new ParkingBoy("boy"));
-//        parkingBoyRepository.flush();
+//        final Employee boy = employeeRepository.save(new Employee("boy"));
+//        employeeRepository.flush();
 //        final ParkingLot lot = parkingLotRepository.save(new ParkingLot("lot",3));
 //        parkingLotRepository.flush();
 //        String json = "{\"parkingLotID\" : \"lot\", \"capacity\" : 3}";
@@ -208,8 +209,8 @@ public class ParkingLotTests {
 //    @Test
 //    public void should_throws_exception_when_get_parking_boys_with_wrong_id() throws Exception {
 //        // Given
-//        final ParkingBoy boy = parkingBoyRepository.save(new ParkingBoy("boy"));
-//        parkingBoyRepository.flush();
+//        final Employee boy = employeeRepository.save(new Employee("boy"));
+//        employeeRepository.flush();
 //        final ParkingLot lot = parkingLotRepository.save(new ParkingLot("lot",3));
 //        parkingLotRepository.flush();
 //        String json = "{\"parkingLotID\" : \"lot\", \"capacity\" : 3}";

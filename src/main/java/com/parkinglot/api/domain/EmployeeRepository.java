@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ParkingBoyRepository extends JpaRepository<ParkingBoy, Long> {
-    ParkingBoy findByName(String name);
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    Employee findByNameAndRole(String name, String role);
 }

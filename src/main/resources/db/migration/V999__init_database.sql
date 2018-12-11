@@ -1,10 +1,11 @@
-INSERT INTO parking_boy (id, name) VALUES (0, 'Locki');
-INSERT INTO parking_boy (id, name) VALUES (9994, 'Rex');
+INSERT INTO employee (id, name, username, email, phone, password, role) VALUES (0, 'Locki', 'locki999', 'locki@mail.com', 87562153, '123', 'ROLE_PARKING_CLERK');
+INSERT INTO employee (id, name, username, email, phone, password, role) VALUES (9994, 'Rex', 'rexlo', 'rexxx@mail.com', 68541257, 'password', 'ROLE_PARKING_CLERK');
 
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (0,'Science Parking Lot', 50, 0, 0);
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9001,'Ocean Parking Area', 10, 0, 0);
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9002,'Software Parking Space', 70, 0, 9994);
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9003,'Grand ParkingLot', 150, 0, 0);
+INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9004,'Almost Full ParkingLot', 1, 0, 0);
 
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99994, 12345678, 'pending', null, null);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99995, 13869403, 'pending', null, null);

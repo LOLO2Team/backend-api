@@ -1,8 +1,8 @@
 package com.parkinglot.api.controllers;
 
 import com.parkinglot.api.domain.OrderRepository;
-import com.parkinglot.api.domain.ParkingBoy;
-import com.parkinglot.api.domain.ParkingBoyRepository;
+import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.ParkingLotResponse;
@@ -33,7 +33,7 @@ public class ParkingLotResource {
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
-    private ParkingBoyRepository parkingBoyRepository;
+    private EmployeeRepository employeeRepository;
 
     @CrossOrigin
     @GetMapping
@@ -52,7 +52,7 @@ public class ParkingLotResource {
     @PutMapping(value = "/{parkingLotId}/employeeId/{employeeId}", produces = {"application/json"})
     public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @PathVariable Long employeeId) {
 
-        Optional<ParkingBoy> parkingBoy = parkingBoyRepository.findById(employeeId);
+        Optional<Employee> parkingBoy = employeeRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
             return ResponseEntity.status(404).header("errorMessage", "parking boy id:" + employeeId + " not found").build();
         }
