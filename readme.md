@@ -112,27 +112,27 @@ Root api: https://parking-lot-backend.herokuapp.com/
 (for parkingboy)
 #### Grab order:
 1. Given:  employeeId, orderid of order with status "pending"
-2. When: PUT to `{orderId}/employeeId/{employeeId}`
+2. When: PUT to `/orders/{orderId}/employeeId/{employeeId}`
 3. Then: update the order status to "parking" and set a employeeId to order
 ---------------
 
 (for parkingboy)
 #### Finish parking the car:
 1. Given:  parkingLotId, orderid of order with status "parking"
-2. When: PUT to `{orderId}/parkingLotId/{parkingLotId}`
+2. When: PUT to `/orders/{orderId}/parkingLotId/{parkingLotId}`
 3. Then: update the order status to "parked" and set a parkingLotId to order
 ---------------
 
 (for customer)
 #### Request fetching car:
 1. Given: orderid of order with status "parked"
-2. When: PATCH to `{orderId}`
+2. When: PATCH to `/orders/{orderId}`
 3. Then: update the order status to "fetching"
 ---------------
 
 (for parkingboy)
 #### Finish fetching car:
 1. Given: orderid of order with status "parked"
-2. When: DELETE to `{orderId}`
+2. When: DELETE to `/orders/{orderId}`
 3. Then: update the order status to "fetched"
 ---------------
