@@ -2,42 +2,14 @@
 
 Root api: https://parking-lot-backend.herokuapp.com/
 
-### `https://parking-lot-backend.herokuapp.com/parkingboys`
-
-#### Create a new parking boy:
-1. Given: a parking boy name
-2. When: POST to `parkingboys` with body:
-```$json
-{
-	"name" : "TestBoy123"
-}
-```  
-3. Then: should return 201 created
-
-#### Get all parking boy:
-1. When: GET from `/parkingboys`
-2. Then: should return 200 with body:
-```$json
-[
-    {
-        "employeeId": 33,
-        "name": "TestBoy123"
-    },
-    {
-        "employeeId": 34,
-        "name": "TestBoy456"
-    }...
-]
-```
-
----------------
 ### `https://parking-lot-backend.herokuapp.com/parkinglots`
 
 #### Create a new parking lot:
 1. Given: a parking lot with capacity
-2. When: POST to `parkinglots` with body:
+2. When: POST to `/parkinglots` with body:
 ```$json
 {
+    "parkingLotName": "name",
 	"capacity" : 10
 }
 ```  
