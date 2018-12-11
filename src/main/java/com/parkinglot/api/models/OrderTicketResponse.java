@@ -27,7 +27,7 @@ public class OrderTicketResponse {
         return response;
     }
     public static OrderTicketResponse create(Order entity) {
-        return create(entity.getVehicleNumber(), entity.getOrderID(), entity.getOrderStatus());
+        return create(entity.getVehicleNumber(), entity.getId(), entity.getOrderStatus());
     }
 
     public void setVehicleNumber(String vehicleNumber) {

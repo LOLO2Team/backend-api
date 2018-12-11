@@ -49,14 +49,6 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    public Long getOrderID() {
-        return id;
-    }
-
-    public void setOrderID(Long orderID) {
-        this.id = orderID;
-    }
-
     public Long getId() {
         return id;
     }

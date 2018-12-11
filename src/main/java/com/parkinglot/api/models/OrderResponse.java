@@ -39,7 +39,7 @@ public class OrderResponse {
     }
 
     public static OrderResponse create(Order entity) {
-        return create(entity.getVehicleNumber(), entity.getOrderID(), entity.getOrderStatus(),entity.getParkingLotId(),entity.getEmployeeId());
+        return create(entity.getVehicleNumber(), entity.getId(), entity.getOrderStatus(),entity.getParkingLotId(),entity.getEmployeeId());
     }
 
     public void setVehicleNumber(String vehicleNumber) {

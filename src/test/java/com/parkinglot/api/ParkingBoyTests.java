@@ -1,6 +1,5 @@
 package com.parkinglot.api;
 
-import com.parkinglot.api.AssertHelper;
 import com.parkinglot.api.domain.ParkingBoy;
 import com.parkinglot.api.domain.ParkingBoyRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
@@ -18,8 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.parkinglot.api.WebTestUtil.getContentAsObject;
 import static org.junit.Assert.assertEquals;
