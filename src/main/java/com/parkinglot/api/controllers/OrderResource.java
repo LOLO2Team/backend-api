@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
 import java.util.*;
+import java.util.stream.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -56,17 +57,17 @@ public class OrderResource {
 
     @CrossOrigin
     @GetMapping(produces = {"application/json"})
-    public ResponseEntity<OrderResponse[]> getOrders(@RequestParam(value = "status", required = false) String status) {
-        OrderResponse[] orders;
+    public ResponseEntity<List<OrderResponse>> getOrders(@RequestParam(value = "status", required = false) String status) {
+        List<OrderResponse> orders;
         if (status == null) {
             orders = orderRepository.findAll().stream()
                 .map(OrderResponse::create)
-                .toArray(OrderResponse[]::new);
+                .collect(Collectors.toList());
         } else {
             orders = orderRepository.findAll().stream()
                 .filter(order -> order.getOrderStatus().equals(status))
                 .map(OrderResponse::create)
-                .toArray(OrderResponse[]::new);
+                .collect(Collectors.toList());
         }
         return ResponseEntity.ok(orders);
     }

@@ -5,6 +5,7 @@ import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
+import com.parkinglot.api.models.ParkingBoyResponse;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +38,23 @@ public class ParkingLotResource {
 
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<ParkingLotResponse>> getAvailableParkingLots(@RequestParam(value = "employeeId") Long employeeId) {
-        final List<ParkingLotResponse> parkingLots = parkingLotRepository
-            .findByEmployeeId(employeeId).stream()
-            .filter(parkingLot -> hasSpace(parkingLot))
-            .map(parkingLot -> ParkingLotResponse
-                .create(parkingLot.getId(), parkingLot.getParkingLotName(), parkingLot.getCapacity(), parkingLot.getReservedSpace(),
-                    parkingLot.getEmployeeId()))
-            .collect(Collectors.toList());
+    public ResponseEntity<List<ParkingLotResponse>> getAvailableParkingLots(@RequestParam(value = "employeeId", required = false) Long employeeId) {
+
+        List<ParkingLotResponse> parkingLots;
+        if(employeeId==null) {
+            parkingLots = parkingLotRepository.findAll().stream()
+                .map(ParkingLotResponse::create)
+                .collect(Collectors.toList());
+        }else {
+            parkingLots = parkingLotRepository
+                .findByEmployeeId(employeeId).stream()
+                .filter(parkingLot -> hasSpace(parkingLot))
+                .map(parkingLot -> ParkingLotResponse
+                    .create(parkingLot.getId(), parkingLot.getParkingLotName(), parkingLot.getCapacity(), parkingLot.getReservedSpace(),
+                        parkingLot.getEmployeeId()))
+                .collect(Collectors.toList());
+        }
+
         return ResponseEntity.ok(parkingLots);
     }
 
