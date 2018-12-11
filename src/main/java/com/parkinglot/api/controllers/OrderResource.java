@@ -81,21 +81,20 @@ public class OrderResource {
 
     @CrossOrigin
     @PutMapping(value = "/{orderId}/employeeId/{employeeId}")
-    public ResponseEntity<OrderResponse> grabOrder(@PathVariable Long orderId, @PathVariable Long employeeId) {
+    public ResponseEntity<Object> grabOrder(@PathVariable Long orderId, @PathVariable Long employeeId) {
 
         Optional<Employee> parkingBoy = employeeRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking boy id:" + employeeId + " not found").build();
+            return ResponseEntity.status(404).body( "parking boy id:" + employeeId + " not found");
         }
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking order id:" + orderId + " not found").build();
+            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PENDING)) {
-            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_PENDING)
-                .build();
+            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_PENDING);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_PARKING);
@@ -108,21 +107,20 @@ public class OrderResource {
 
     @CrossOrigin
     @PutMapping(value = "/{orderId}/parkingLotId/{parkingLotId}")
-    public ResponseEntity<OrderResponse> parkToParkingLot(@PathVariable Long orderId, @PathVariable Long parkingLotId) {
+    public ResponseEntity<Object> parkToParkingLot(@PathVariable Long orderId, @PathVariable Long parkingLotId) {
 
         Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
         if (!parkingLot.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking lot id:" + parkingLotId + " not found").build();
+            return ResponseEntity.status(404).body( "parking lot id:" + parkingLotId + " not found");
         }
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking order id:" + orderId + " not found").build();
+            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PARKING)) {
-            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKING)
-                .build();
+            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKING);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_PARKED);
@@ -135,16 +133,16 @@ public class OrderResource {
 
     @CrossOrigin
     @PatchMapping(value = "/{orderId}")
-    public ResponseEntity<OrderResponse> createNewFetchRequest(
+    public ResponseEntity<Object> createNewFetchRequest(
         @PathVariable Long orderId) {
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking order id:" + orderId + " not found").build();
+            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PARKED)) {
-            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKED).build();
+            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKED);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_FETCHING);
@@ -156,17 +154,16 @@ public class OrderResource {
 
     @CrossOrigin
     @DeleteMapping(value = "/{orderId}")
-    public ResponseEntity<OrderResponse> fetchCarToParkingLot(
+    public ResponseEntity<Object> fetchCarToParkingLot(
         @PathVariable Long orderId) {
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking order id:" + orderId + " not found").build();
+            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_FETCHING)) {
-            return ResponseEntity.status(400).header("errorMessage", "parking order id:" + orderId + " status is not " + ORDER_STATUS_FETCHING)
-                .build();
+            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_FETCHING);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_FETCHED);

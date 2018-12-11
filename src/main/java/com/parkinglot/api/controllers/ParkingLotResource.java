@@ -63,12 +63,12 @@ public class ParkingLotResource {
 
         Optional<Employee> parkingBoy = employeeRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking boy id:" + employeeId + " not found").build();
+            return ResponseEntity.status(404).body( "parking boy id:" + employeeId + " not found");
         }
 
         Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
         if (!parkingLot.isPresent()) {
-            return ResponseEntity.status(404).header("errorMessage", "parking lot id:" + parkingLotId + " not found").build();
+            return ResponseEntity.status(404).body( "parking lot id:" + parkingLotId + " not found");
         }
 
         parkingLot.get().setEmployeeId(employeeId);

@@ -42,9 +42,9 @@ public class EmployeeResource {
 
     @CrossOrigin
     @PostMapping(consumes = {"application/json"})
-    public ResponseEntity<EmployeeResponse> add(@RequestBody Employee employee) {
+    public ResponseEntity<Object> add(@RequestBody Employee employee) {
         if(employee.getRole()== null || !Arrays.stream(RoleName.values()).anyMatch((t) -> t.name().equals(employee.getRole()))){
-            return ResponseEntity.status(400).header("errorMessage","the role not found").build();
+            return ResponseEntity.status(400).body("the role not found");
         }
         Employee savedEmployee = employeeRepository.save(employee);
         if (savedEmployee != null) {
