@@ -8,4 +8,7 @@ public class SecurityConstants {
     public static final String SIGN_UP_URL = "/users/sign-up";
     // DANGER !!!! For debug only
     public static final String DB_URL = "/h2-console/**";
+    public static final String ORDERS = "/orders/**";
+    public static final String PARKINGLOTS = "/parkinglots/**";
+    public static final String PARKINGBOYS = "/parkingboys/**";
 }

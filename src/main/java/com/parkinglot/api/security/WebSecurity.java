@@ -16,8 +16,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.context.annotation.Bean;
 
-import static com.parkinglot.api.security.SecurityConstants.SIGN_UP_URL;
-import static com.parkinglot.api.security.SecurityConstants.DB_URL;
+import static com.parkinglot.api.security.SecurityConstants.*;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
@@ -34,6 +34,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin().and().cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .antMatchers(DB_URL).permitAll()
+                .antMatchers(PARKINGBOYS).permitAll()
+                .antMatchers(PARKINGLOTS).permitAll()
+                .antMatchers(ORDERS).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
