@@ -5,7 +5,7 @@ import com.parkinglot.api.domain.Employee;
 
 import java.util.*;
 
-public class ParkingBoyResponse {
+public class EmployeeResponse {
     private Long employeeId;
     private String name;
     private String username;
@@ -61,11 +61,11 @@ public class ParkingBoyResponse {
         this.role = role;
     }
 
-    public static ParkingBoyResponse create(Long employeeId, String name, String username, String phone, String email, String role) {
+    public static EmployeeResponse create(Long employeeId, String name, String username, String phone, String email, String role) {
         Objects.requireNonNull(employeeId);
         Objects.requireNonNull(name);
 
-        final ParkingBoyResponse response = new ParkingBoyResponse();
+        final EmployeeResponse response = new EmployeeResponse();
         response.setEmployeeId(employeeId);
         response.setName(name);
         response.setUsername(username);
@@ -76,7 +76,7 @@ public class ParkingBoyResponse {
         return response;
     }
 
-    public static ParkingBoyResponse create(Employee entity) {
+    public static EmployeeResponse create(Employee entity) {
         return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(), entity.getRole());
     }
 

@@ -5,7 +5,6 @@ import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.models.ParkingBoyResponse;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

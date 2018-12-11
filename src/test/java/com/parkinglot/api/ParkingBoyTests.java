@@ -4,7 +4,7 @@ import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.domain.RoleName;
-import com.parkinglot.api.models.ParkingBoyResponse;
+import com.parkinglot.api.models.EmployeeResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class ParkingBoyTests {
         // Then
         assertEquals(200, result.getResponse().getStatus());
 
-        final ParkingBoyResponse[] parkingBoys = getContentAsObject(result, ParkingBoyResponse[].class);
+        final EmployeeResponse[] parkingBoys = getContentAsObject(result, EmployeeResponse[].class);
 
         assertEquals(1, parkingBoys.length);
         assertEquals("boy", parkingBoys[0].getName());
@@ -99,7 +99,7 @@ public class ParkingBoyTests {
 
         Optional<Employee> actualBoy = employeeRepository.findById(1L);
 
-        final ParkingBoyResponse parkingBoy = ParkingBoyResponse.create(actualBoy.get());
+        final EmployeeResponse parkingBoy = EmployeeResponse.create(actualBoy.get());
 
         assertEquals(1, parkingBoys.size());
         assertEquals("boy", parkingBoy.getName());

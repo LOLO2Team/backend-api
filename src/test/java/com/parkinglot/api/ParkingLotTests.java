@@ -170,7 +170,7 @@ public class ParkingLotTests {
 //
 //        final ParkingLotResponse parkingLot = ParkingLotResponse.create(actualParkingLot);
 //
-//        final ParkingBoyResponse parkingBoy = ParkingBoyResponse.create(actualParkingBoy.getEmployeeId(),actualParkingBoy.getParkingLotList());
+//        final EmployeeResponse parkingBoy = EmployeeResponse.create(actualParkingBoy.getEmployeeId(),actualParkingBoy.getParkingLotList());
 //
 //        final Boolean ifAcutalParkingLotFoundInParkingBoy = parkingBoy.getParkingLots().stream().allMatch(parkingLot1 -> parkingLot1.getParkingLotID().equals("TestPark123"));
 //
@@ -200,7 +200,7 @@ public class ParkingLotTests {
 //        // Then
 //        assertEquals(200, result.getResponse().getStatus());
 //
-//        final ParkingBoyResponse parkingBoy = getContentAsObject(result, ParkingBoyResponse.class);
+//        final EmployeeResponse parkingBoy = getContentAsObject(result, EmployeeResponse.class);
 //
 //        assertEquals("boy", parkingBoy.getEmployeeId());
 //        assertEquals("lot", parkingBoy.getParkingLots().get(0).getParkingLotID());

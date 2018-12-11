@@ -20,8 +20,8 @@ import java.util.*;
 import java.util.stream.*;
 
 @RestController
-@RequestMapping("/parkingboys")
-public class ParkingBoyResource {
+@RequestMapping("/employees")
+public class EmployeeResource {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -33,19 +33,24 @@ public class ParkingBoyResource {
     @CrossOrigin
     @GetMapping
     public ResponseEntity<List<EmployeeResponse>> getAll() {
-        final List<EmployeeResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+        final List<EmployeeResponse> employees = employeeRepository.findAll()
             .stream()
             .map(EmployeeResponse::create)
             .collect(Collectors.toList());
-        return ResponseEntity.ok(parkingBoys);
+        return ResponseEntity.ok(employees);
     }
 
     @CrossOrigin
     @PostMapping(consumes = {"application/json"})
-    public ResponseEntity<String> add(@RequestBody Employee employee) {
-        employee.setRole(RoleName.ROLE_PARKING_CLERK.toString());
-        if (employeeRepository.save(employee) != null) {
-            return ResponseEntity.created(URI.create("/parkingboys/" + employee.getId())).build();
+    public ResponseEntity<EmployeeResponse> add(@RequestBody Employee employee) {
+        if(employee.getRole()== null || !Arrays.stream(RoleName.values()).anyMatch((t) -> t.name().equals(employee.getRole()))){
+            return ResponseEntity.status(400).header("errorMessage","the role not found").build();
+        }
+        Employee savedEmployee = employeeRepository.save(employee);
+        if (savedEmployee != null) {
+            return ResponseEntity
+                .created(URI.create("/parkingboys/" + employee.getId()))
+                .body(EmployeeResponse.create(savedEmployee));
         }
         return ResponseEntity.badRequest().build();
     }
