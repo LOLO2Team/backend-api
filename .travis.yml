@@ -18,7 +18,7 @@ script:
 deploy:
   - provider: heroku
     api_key: 744fff7d-5617-49c1-a691-e0aa1473a891
-    app: parking-lot-backend-app 
+    app: parking-lot-backend
     on:
       branch: master 
         
