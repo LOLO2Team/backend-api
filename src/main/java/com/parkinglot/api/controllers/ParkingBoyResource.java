@@ -56,7 +56,7 @@ public class ParkingBoyResource {
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
         employee.setRole(RoleName.ROLE_PARKING_CLERK.toString());
         final Employee newParkingBoy = employeeRepository.save(employee);
-        if (employeeRepository.save(employee) == null) {
+        if (newParkingBoy == null) {
             return ResponseEntity.status(400).body("parking boy created fail");
         }
         return ResponseEntity.created(URI.create("/parkingboys/" + employee.getId())).body(EmployeeResponse.create(employee));

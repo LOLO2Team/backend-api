@@ -53,7 +53,7 @@ public class EmployeeResource {
     @PostMapping(consumes = {"application/json"})
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
         final Employee newEmployee = employeeRepository.save(employee);
-        if (employeeRepository.save(employee) == null) {
+        if (newEmployee == null) {
             return ResponseEntity.status(400).body("parking boy created fail");
         }
         return ResponseEntity.created(URI.create("/employees/" + employee.getId())).body(EmployeeResponse.create(employee));
