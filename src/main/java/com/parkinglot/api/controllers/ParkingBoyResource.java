@@ -39,7 +39,6 @@ public class ParkingBoyResource {
     private ParkingLotRepository parkingLotRepository;
     @Autowired
     private EntityManager entityManager;
-
     @Autowired
     private OrderRepository orderRepository;
 
@@ -62,6 +61,16 @@ public class ParkingBoyResource {
             }
         );
         return ResponseEntity.ok(parkingBoys);
+    }
+
+    @CrossOrigin
+    @GetMapping(value ="/{employeeId}")
+    public ResponseEntity<Object> getParkingBoy(@PathVariable Long employeeId) {
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (!employee.isPresent()) {
+            return ResponseEntity.status(404).body("employee id: " + employeeId + " not found");
+        }
+        return ResponseEntity.ok(EmployeeResponse.create(employee.get()));
     }
 
     @CrossOrigin
