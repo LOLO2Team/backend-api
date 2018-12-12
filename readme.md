@@ -110,7 +110,8 @@ Root api: https://parking-lot-backend.herokuapp.com/
 ---------------
 
 ## Guide to deploy to prod
-Replace the deploy text in .travis.yml with below
+1. Replace the deploy text in .travis.yml with below
+```
 deploy:
   provider: heroku
   api_key: 02ad66a3-fa5a-4f4a-a0c2-1542413b1246
@@ -119,3 +120,4 @@ deploy:
     branches:
         only:
             - prod
+```
