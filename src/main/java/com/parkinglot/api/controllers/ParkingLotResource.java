@@ -52,6 +52,30 @@ public class ParkingLotResource {
     }
 
     @CrossOrigin
+    @GetMapping(value = "/search")
+    public ResponseEntity<List<ParkingLotResponse>> searchParkingLot(@RequestParam(value = "q") String expect) {
+        List<ParkingLotResponse> parkingLots = parkingLotRepository
+                .findAll().stream()
+                .filter(parkingLot -> findContain(parkingLot, expect))
+                .map(ParkingLotResponse::create)
+                .collect(Collectors.toList());
+        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+        return ResponseEntity.ok(parkingLots);
+    }
+
+    private boolean findContain(ParkingLot parkingLot, String expect){
+        String dataCollection = parkingLot.getParkingLotName() +parkingLot.getParkingLotStatus() +"/"+parkingLot.getId()+"/"+parkingLot.getCapacity();
+        if(parkingLot.getEmployeeId()!=null){
+            Optional<Employee> opEmployee = employeeRepository.findById(parkingLot.getEmployeeId());
+            if(opEmployee.isPresent()) {
+                Employee employee = opEmployee.get();
+                dataCollection += employee.getEmail()+employee.getName()+employee.getPhone()+employee.getStatus()+employee.getUsername()+"/"+employee.getId();
+            }
+        }
+        return dataCollection.toUpperCase().contains(expect.toUpperCase());
+    }
+
+    @CrossOrigin
     @PutMapping(value = "/{parkingLotId}/employeeId/{employeeId}", produces = {"application/json"})
     public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @PathVariable Long employeeId) {
 
