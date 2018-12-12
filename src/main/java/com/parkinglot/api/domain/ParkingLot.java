@@ -19,7 +19,7 @@ public class ParkingLot {
     private int capacity;
     private int reservedSpace;
     private Long employeeId;
-
+    private String parkingLotStatus = "OPEN";
 
     public ParkingLot() {
     }
@@ -63,5 +63,13 @@ public class ParkingLot {
 
     public void setParkingLotName(String parkingLotName) {
         this.parkingLotName = parkingLotName;
+    }
+
+    public String getParkingLotStatus() {
+        return parkingLotStatus;
+    }
+
+    public void setParkingLotStatus(String parkingLotStatus) {
+        this.parkingLotStatus = parkingLotStatus;
     }
 }

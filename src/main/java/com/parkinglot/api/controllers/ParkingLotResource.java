@@ -1,10 +1,6 @@
 package com.parkinglot.api.controllers;
 
-import com.parkinglot.api.domain.OrderRepository;
-import com.parkinglot.api.domain.Employee;
-import com.parkinglot.api.domain.EmployeeRepository;
-import com.parkinglot.api.domain.ParkingLot;
-import com.parkinglot.api.domain.ParkingLotRepository;
+import com.parkinglot.api.domain.*;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +52,30 @@ public class ParkingLotResource {
     }
 
     @CrossOrigin
+    @GetMapping(value = "/search")
+    public ResponseEntity<List<ParkingLotResponse>> searchParkingLot(@RequestParam(value = "q") String expect) {
+        List<ParkingLotResponse> parkingLots = parkingLotRepository
+                .findAll().stream()
+                .filter(parkingLot -> findContain(parkingLot, expect))
+                .map(ParkingLotResponse::create)
+                .collect(Collectors.toList());
+        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+        return ResponseEntity.ok(parkingLots);
+    }
+
+    private boolean findContain(ParkingLot parkingLot, String expect){
+        String dataCollection = parkingLot.getParkingLotName() +parkingLot.getParkingLotStatus() +"/"+parkingLot.getId()+"/"+parkingLot.getCapacity();
+        if(parkingLot.getEmployeeId()!=null){
+            Optional<Employee> opEmployee = employeeRepository.findById(parkingLot.getEmployeeId());
+            if(opEmployee.isPresent()) {
+                Employee employee = opEmployee.get();
+                dataCollection += employee.getEmail()+employee.getName()+employee.getPhone()+employee.getStatus()+employee.getUsername()+"/"+employee.getId();
+            }
+        }
+        return dataCollection.toUpperCase().contains(expect.toUpperCase());
+    }
+
+    @CrossOrigin
     @PutMapping(value = "/{parkingLotId}/employeeId/{employeeId}", produces = {"application/json"})
     public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @PathVariable Long employeeId) {
 
@@ -90,6 +110,27 @@ public class ParkingLotResource {
         return orderRepository
             .findByParkingLotIdAndOrderStatus(parkingLotId, ORDER_STATUS_PARKED)
             .size();
+    }
+
+    @CrossOrigin
+    @PutMapping(value = "/{parkingLotId}/status/{status}")
+    public ResponseEntity<Object> updateStatus(@PathVariable Long parkingLotId, @PathVariable String status) {
+        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
+        if (!isValidStatus(status)) {
+            return ResponseEntity.status(400).body("parking lot status: " + status + " not found/support");
+        }
+        if (!parkingLot.isPresent()) {
+            return ResponseEntity.status(404).body("parking lot not found");
+        }
+        parkingLot.get().setParkingLotStatus(status);
+        parkingLotRepository.save(parkingLot.get());
+        ParkingLotResponse parkingLotResponse = ParkingLotResponse.create(parkingLot.get());
+        parkingLotResponse.setParkedCount(getCarCountInParkingLot(parkingLotResponse.getParkingLotId()));
+        return ResponseEntity.ok(parkingLotResponse);
+    }
+
+    boolean isValidStatus(String status) {
+        return Arrays.stream(ParkingLotStatus.values()).anyMatch((t) -> t.name().equals(status));
     }
 
     private boolean hasSpace(ParkingLot parkingLot) {

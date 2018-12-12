@@ -39,7 +39,6 @@ public class ParkingBoyResource {
     private ParkingLotRepository parkingLotRepository;
     @Autowired
     private EntityManager entityManager;
-
     @Autowired
     private OrderRepository orderRepository;
 
@@ -54,16 +53,50 @@ public class ParkingBoyResource {
             .filter(order -> status == null || order.getStatus().equals(status))
             .map(EmployeeDetailResponse::create)
             .collect(Collectors.toList());
-        parkingBoys.forEach(parkingBoy -> {
-                List<ParkingLotResponse> parkingLots = parkingLotRepository
-                    .findByEmployeeId(parkingBoy.getEmployeeId()).stream()
-                    .map(ParkingLotResponse::create)
-                    .collect(Collectors.toList());
-                parkingBoy.setParkingLotResponses(parkingLots);
-            parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
-            }
+        parkingBoys.forEach(parkingBoy -> {appendParkingLot(parkingBoy); }
         );
         return ResponseEntity.ok(parkingBoys);
+    }
+
+    @CrossOrigin
+    @GetMapping(value ="/search")
+    public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoysBy(
+            @RequestParam(value = "q") String expect) {
+        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+                .stream()
+                .filter(parkingBoy -> findContain(parkingBoy, expect))
+                .map(EmployeeDetailResponse::create)
+                .collect(Collectors.toList());
+        parkingBoys.forEach(parkingBoy -> {appendParkingLot(parkingBoy); }
+        );
+        return ResponseEntity.ok(parkingBoys);
+    }
+
+    private boolean findContain(Employee employee, String expect){
+        String dataCollection = employee.getEmail()+employee.getName()+employee.getPhone()+employee.getStatus()+employee.getUsername()+"/"+employee.getId();
+        return dataCollection.toUpperCase().contains(expect.toUpperCase());
+    }
+
+
+    private void appendParkingLot(EmployeeDetailResponse parkingBoy) {
+        List<ParkingLotResponse> parkingLots = parkingLotRepository
+                .findByEmployeeId(parkingBoy.getEmployeeId()).stream()
+                .map(ParkingLotResponse::create)
+                .collect(Collectors.toList());
+        parkingBoy.setParkingLotResponses(parkingLots);
+        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+    }
+
+
+
+    @CrossOrigin
+    @GetMapping(value ="/{employeeId}")
+    public ResponseEntity<Object> getParkingBoy(@PathVariable Long employeeId) {
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (!employee.isPresent()) {
+            return ResponseEntity.status(404).body("employee id: " + employeeId + " not found");
+        }
+        return ResponseEntity.ok(EmployeeResponse.create(employee.get()));
     }
 
     @CrossOrigin
