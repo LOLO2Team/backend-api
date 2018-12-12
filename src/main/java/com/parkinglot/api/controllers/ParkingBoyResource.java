@@ -3,9 +3,12 @@ package com.parkinglot.api.controllers;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.EmployeeStatus;
+import com.parkinglot.api.domain.OrderRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.domain.RoleName;
+import com.parkinglot.api.models.EmployeeDetailResponse;
 import com.parkinglot.api.models.EmployeeResponse;
+import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +26,8 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.*;
 
+import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PARKED;
+
 @RestController
 @RequestMapping("/parkingboys")
 public class ParkingBoyResource {
@@ -34,15 +39,27 @@ public class ParkingBoyResource {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<EmployeeResponse>> getParkingBoys(
+    public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoys(
         @RequestParam(value = "status", required = false) String status) {
-        final List<EmployeeResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
             .stream()
             .filter(order -> status == null || order.getStatus().equals(status))
-            .map(EmployeeResponse::create)
+            .map(EmployeeDetailResponse::create)
             .collect(Collectors.toList());
+        parkingBoys.forEach(parkingBoy -> {
+                List<ParkingLotResponse> parkingLots = parkingLotRepository
+                    .findByEmployeeId(parkingBoy.getEmployeeId()).stream()
+                    .map(ParkingLotResponse::create)
+                    .collect(Collectors.toList());
+                parkingBoy.setParkingLotResponses(parkingLots);
+            parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+            }
+        );
         return ResponseEntity.ok(parkingBoys);
     }
 
@@ -87,5 +104,11 @@ public class ParkingBoyResource {
 
     boolean isValidStatus(String status) {
         return Arrays.stream(EmployeeStatus.values()).anyMatch((t) -> t.name().equals(status));
+    }
+
+    private int getCarCountInParkingLot(Long parkingLotId) {
+        return orderRepository
+            .findByParkingLotIdAndOrderStatus(parkingLotId, ORDER_STATUS_PARKED)
+            .size();
     }
 }
