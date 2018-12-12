@@ -7,8 +7,7 @@ import javax.persistence.*;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", unique = true, nullable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "name", length = 32)
     private String name;
@@ -48,7 +47,7 @@ public class Employee {
         this.role = role.toString();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

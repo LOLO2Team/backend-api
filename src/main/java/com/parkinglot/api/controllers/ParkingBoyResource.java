@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,7 @@ public class ParkingBoyResource {
 
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<EmployeeResponse>> getAll() {
+    public ResponseEntity<List<EmployeeResponse>> getAllParkingBoys() {
         final List<EmployeeResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
             .stream()
             .map(EmployeeResponse::create)
@@ -41,13 +42,23 @@ public class ParkingBoyResource {
     }
 
     @CrossOrigin
-    @PostMapping(consumes = {"application/json"})
-    public ResponseEntity<String> add(@RequestBody Employee employee) {
-        employee.setRole(RoleName.ROLE_PARKING_CLERK.toString());
-        if (employeeRepository.save(employee) != null) {
-            return ResponseEntity.created(URI.create("/parkingboys/" + employee.getId())).build();
+    @GetMapping(value = "/username/{username}")
+    public ResponseEntity<Object> getParkingBoyByUsername(@PathVariable String username) {
+        final Employee employee = employeeRepository.findByUsernameAndRole(username, RoleName.ROLE_PARKING_CLERK.toString());
+        if (employee == null) {
+            return ResponseEntity.status(404).body("employee username: " + username + " not found");
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(EmployeeResponse.create(employee));
     }
 
+    @CrossOrigin
+    @PostMapping(consumes = {"application/json"})
+    public ResponseEntity<Object> add(@RequestBody Employee employee) {
+        employee.setRole(RoleName.ROLE_PARKING_CLERK.toString());
+        final Employee newParkingBoy = employeeRepository.save(employee);
+        if (newParkingBoy == null) {
+            return ResponseEntity.status(400).body("parking boy created fail");
+        }
+        return ResponseEntity.created(URI.create("/parkingboys/" + employee.getId())).body(EmployeeResponse.create(employee));
+    }
 }

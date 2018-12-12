@@ -108,3 +108,18 @@ Root api: https://parking-lot-backend.herokuapp.com/
 2. When: DELETE to `/orders/{orderId}`
 3. Then: update the order status to "fetched"
 ---------------
+
+## Guide to deploy to prod
+1. Replace the deploy text in .travis.yml with below
+```
+deploy:
+  provider: heroku
+  api_key: 02ad66a3-fa5a-4f4a-a0c2-1542413b1246
+  app: parking-lot-backend-prod
+  on:
+    branches:
+        only:
+            - prod
+```
+2. delete other yml in the root folder
+3. push to prod branch
