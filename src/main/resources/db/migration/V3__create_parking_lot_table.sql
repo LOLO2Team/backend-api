@@ -4,5 +4,6 @@ create table parking_lot (
     capacity              int  not null,
     reserved_space        int  null,
     employee_id bigint    null,
+    parking_lot_status    VARCHAR not null DEFAULT 'OPEN',
     primary key (id)
 )

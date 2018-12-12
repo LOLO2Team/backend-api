@@ -12,6 +12,7 @@ public class ParkingLotResponse {
     private int reservedSpace;
     private Integer parkedCount;
     private Long employeeId;
+    private String parkingLotStatus;
 
     public String getParkingLotName() {
         return parkingLotName;
@@ -37,7 +38,7 @@ public class ParkingLotResponse {
         this.parkedCount = parkedCount;
     }
 
-    public static ParkingLotResponse create(Long parkingLotId , String parkingLotName, int capacity, int reservedSpace, Long employeeId) {
+    public static ParkingLotResponse create(Long parkingLotId , String parkingLotName, int capacity, int reservedSpace, Long employeeId, String parkingLotStatus) {
         Objects.requireNonNull(parkingLotId);
         Objects.requireNonNull(parkingLotName);
         final ParkingLotResponse response = new ParkingLotResponse();
@@ -46,6 +47,7 @@ public class ParkingLotResponse {
         response.setCapacity(capacity);
         response.setReservedSpace(reservedSpace);
         response.setEmployeeId(employeeId);
+        response.setParkingLotStatus(parkingLotStatus);
         return response;
     }
 
@@ -66,7 +68,7 @@ public class ParkingLotResponse {
     }
 
     public static ParkingLotResponse create(ParkingLot entity) {
-        return create(entity.getId(), entity.getParkingLotName(), entity.getCapacity(), entity.getReservedSpace(), entity.getEmployeeId());
+        return create(entity.getId(), entity.getParkingLotName(), entity.getCapacity(), entity.getReservedSpace(), entity.getEmployeeId(), entity.getParkingLotStatus());
     }
 
     public Long getEmployeeId() {
@@ -75,6 +77,14 @@ public class ParkingLotResponse {
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public String getParkingLotStatus() {
+        return parkingLotStatus;
+    }
+
+    public void setParkingLotStatus(String parkingLotStatus) {
+        this.parkingLotStatus = parkingLotStatus;
     }
 
     @JsonIgnore
