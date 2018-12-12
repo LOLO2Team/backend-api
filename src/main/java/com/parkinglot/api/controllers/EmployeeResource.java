@@ -3,7 +3,6 @@ package com.parkinglot.api.controllers;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.domain.RoleName;
 import com.parkinglot.api.models.EmployeeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,26 +32,30 @@ public class EmployeeResource {
     @CrossOrigin
     @GetMapping
     public ResponseEntity<List<EmployeeResponse>> getAll() {
-        final List<EmployeeResponse> employees = employeeRepository.findAll()
+        final List<EmployeeResponse> Employees = employeeRepository.findAll()
             .stream()
             .map(EmployeeResponse::create)
             .collect(Collectors.toList());
-        return ResponseEntity.ok(employees);
+        return ResponseEntity.ok(Employees);
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/username/{username}")
+    public ResponseEntity<Object> getByEmployeeByUsername(String username) {
+        final Employee employee = employeeRepository.findByUsername(username);
+        if (employee == null) {
+            return ResponseEntity.status(404).body("employee username: " + username + " not found");
+        }
+        return ResponseEntity.ok(EmployeeResponse.create(employee));
     }
 
     @CrossOrigin
     @PostMapping(consumes = {"application/json"})
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
-        if(employee.getRole()== null || !Arrays.stream(RoleName.values()).anyMatch((t) -> t.name().equals(employee.getRole()))){
-            return ResponseEntity.status(400).body("the role not found");
+        final Employee newEmployee = employeeRepository.save(employee);
+        if (employeeRepository.save(employee) == null) {
+            return ResponseEntity.status(400).body("parking boy created fail");
         }
-        Employee savedEmployee = employeeRepository.save(employee);
-        if (savedEmployee != null) {
-            return ResponseEntity
-                .created(URI.create("/parkingboys/" + employee.getId()))
-                .body(EmployeeResponse.create(savedEmployee));
-        }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.created(URI.create("/employees/" + employee.getId())).body(EmployeeResponse.create(employee));
     }
-
 }

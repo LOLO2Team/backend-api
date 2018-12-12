@@ -9,4 +9,6 @@ import java.util.*;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Employee findByNameAndRole(String name, String role);
     List<Employee> findByRole(String role);
+    Employee findByUsername(String username);
+    Employee findByUsernameAndRole(String username, String role);
 }
