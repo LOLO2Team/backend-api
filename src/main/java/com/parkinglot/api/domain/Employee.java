@@ -27,6 +27,9 @@ public class Employee {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private String status = "OFFDUTY";
+
     public String getName() {
         return name;
     }
@@ -82,6 +85,10 @@ public class Employee {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
 
     public String getRole() {
         return role;
