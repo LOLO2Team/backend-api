@@ -121,3 +121,5 @@ deploy:
         only:
             - prod
 ```
+2. delete other yml in the root folder
+3. push to prod branch
