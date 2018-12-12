@@ -39,6 +39,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(PARKINGBOYS).permitAll()
                 .antMatchers(PARKINGLOTS).permitAll()
                 .antMatchers(ORDERS).permitAll()
+                .antMatchers(HttpMethod.PATCH,PLACEORDERFROMCUST).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))

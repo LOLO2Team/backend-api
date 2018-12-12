@@ -11,4 +11,5 @@ public class SecurityConstants {
     public static final String ORDERS = "/orders**";
     public static final String PARKINGLOTS = "/parkinglots**";
     public static final String PARKINGBOYS = "/parkingboys**";
+    public static final String PLACEORDERFROMCUST = "/orders/**";
 }
