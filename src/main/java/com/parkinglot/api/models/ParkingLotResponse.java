@@ -10,6 +10,7 @@ public class ParkingLotResponse {
     private String parkingLotName;
     private int capacity;
     private int reservedSpace;
+    private Integer parkedCount;
     private Long employeeId;
 
     public String getParkingLotName() {
@@ -26,6 +27,14 @@ public class ParkingLotResponse {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public int getParkedCount() {
+        return parkedCount;
+    }
+
+    public void setParkedCount(Integer parkedCount) {
+        this.parkedCount = parkedCount;
     }
 
     public static ParkingLotResponse create(Long parkingLotId , String parkingLotName, int capacity, int reservedSpace, Long employeeId) {

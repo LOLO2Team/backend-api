@@ -38,22 +38,20 @@ public class ParkingLotResource {
     @CrossOrigin
     @GetMapping
     public ResponseEntity<List<ParkingLotResponse>> getAvailableParkingLots(@RequestParam(value = "employeeId", required = false) Long employeeId) {
-
         List<ParkingLotResponse> parkingLots;
-        if(employeeId==null) {
-            parkingLots = parkingLotRepository.findAll().stream()
+        if (employeeId == null) {
+            parkingLots = parkingLotRepository
+                .findAll().stream()
                 .map(ParkingLotResponse::create)
                 .collect(Collectors.toList());
-        }else {
+        } else {
             parkingLots = parkingLotRepository
                 .findByEmployeeId(employeeId).stream()
                 .filter(parkingLot -> hasSpace(parkingLot))
-                .map(parkingLot -> ParkingLotResponse
-                    .create(parkingLot.getId(), parkingLot.getParkingLotName(), parkingLot.getCapacity(), parkingLot.getReservedSpace(),
-                        parkingLot.getEmployeeId()))
+                .map(ParkingLotResponse::create)
                 .collect(Collectors.toList());
         }
-
+        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
         return ResponseEntity.ok(parkingLots);
     }
 
@@ -63,12 +61,12 @@ public class ParkingLotResource {
 
         Optional<Employee> parkingBoy = employeeRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
-            return ResponseEntity.status(404).body( "parking boy id:" + employeeId + " not found");
+            return ResponseEntity.status(404).body("parking boy id:" + employeeId + " not found");
         }
 
         Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
         if (!parkingLot.isPresent()) {
-            return ResponseEntity.status(404).body( "parking lot id:" + parkingLotId + " not found");
+            return ResponseEntity.status(404).body("parking lot id:" + parkingLotId + " not found");
         }
 
         parkingLot.get().setEmployeeId(employeeId);
@@ -88,10 +86,13 @@ public class ParkingLotResource {
         return ResponseEntity.badRequest().build();
     }
 
-    private boolean hasSpace(ParkingLot parkingLot) {
-        int carCountInParkingLot = orderRepository
-            .findByParkingLotIdAndOrderStatus(parkingLot.getId(), ORDER_STATUS_PARKED)
+    private int getCarCountInParkingLot(Long parkingLotId) {
+        return orderRepository
+            .findByParkingLotIdAndOrderStatus(parkingLotId, ORDER_STATUS_PARKED)
             .size();
-        return parkingLot.getCapacity() > carCountInParkingLot;
+    }
+
+    private boolean hasSpace(ParkingLot parkingLot) {
+        return parkingLot.getCapacity() > getCarCountInParkingLot(parkingLot.getId());
     }
 }
