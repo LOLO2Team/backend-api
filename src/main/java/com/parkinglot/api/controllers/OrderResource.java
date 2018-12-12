@@ -57,18 +57,14 @@ public class OrderResource {
 
     @CrossOrigin
     @GetMapping(produces = {"application/json"})
-    public ResponseEntity<List<OrderResponse>> getOrders(@RequestParam(value = "status", required = false) String status) {
-        List<OrderResponse> orders;
-        if (status == null) {
-            orders = orderRepository.findAll().stream()
-                .map(OrderResponse::create)
-                .collect(Collectors.toList());
-        } else {
-            orders = orderRepository.findAll().stream()
-                .filter(order -> order.getOrderStatus().equals(status))
-                .map(OrderResponse::create)
-                .collect(Collectors.toList());
-        }
+    public ResponseEntity<List<OrderResponse>> getOrders(
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "employeeId", required = false) String employeeId) {
+        List<OrderResponse> orders = orderRepository.findAll().stream()
+            .filter(order -> status == null || order.getOrderStatus().equals(status))
+            .filter(order -> employeeId == null || (order.getEmployeeId()!=null && order.getEmployeeId()==Long.parseLong(employeeId)))
+            .map(OrderResponse::create)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(orders);
     }
 
@@ -85,16 +81,16 @@ public class OrderResource {
 
         Optional<Employee> parkingBoy = employeeRepository.findById(employeeId);
         if (!parkingBoy.isPresent()) {
-            return ResponseEntity.status(404).body( "parking boy id:" + employeeId + " not found");
+            return ResponseEntity.status(404).body("parking boy id:" + employeeId + " not found");
         }
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
+            return ResponseEntity.status(404).body("parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PENDING)) {
-            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_PENDING);
+            return ResponseEntity.status(400).body("parking order id:" + orderId + " status is not " + ORDER_STATUS_PENDING);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_PARKING);
@@ -111,16 +107,16 @@ public class OrderResource {
 
         Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
         if (!parkingLot.isPresent()) {
-            return ResponseEntity.status(404).body( "parking lot id:" + parkingLotId + " not found");
+            return ResponseEntity.status(404).body("parking lot id:" + parkingLotId + " not found");
         }
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
+            return ResponseEntity.status(404).body("parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PARKING)) {
-            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKING);
+            return ResponseEntity.status(400).body("parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKING);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_PARKED);
@@ -138,11 +134,11 @@ public class OrderResource {
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
+            return ResponseEntity.status(404).body("parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_PARKED)) {
-            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKED);
+            return ResponseEntity.status(400).body("parking order id:" + orderId + " status is not " + ORDER_STATUS_PARKED);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_FETCHING);
@@ -159,11 +155,11 @@ public class OrderResource {
 
         Optional<Order> order = orderRepository.findById(orderId);
         if (!order.isPresent()) {
-            return ResponseEntity.status(404).body( "parking order id:" + orderId + " not found");
+            return ResponseEntity.status(404).body("parking order id:" + orderId + " not found");
         }
 
         if (!order.get().getOrderStatus().equals(ORDER_STATUS_FETCHING)) {
-            return ResponseEntity.status(400).body( "parking order id:" + orderId + " status is not " + ORDER_STATUS_FETCHING);
+            return ResponseEntity.status(400).body("parking order id:" + orderId + " status is not " + ORDER_STATUS_FETCHING);
         }
 
         order.get().setOrderStatus(ORDER_STATUS_FETCHED);
