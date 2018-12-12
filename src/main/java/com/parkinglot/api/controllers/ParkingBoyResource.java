@@ -47,7 +47,9 @@ public class ParkingBoyResource {
     @GetMapping
     public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoys(
         @RequestParam(value = "status", required = false) String status) {
-        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+        //To do ...
+//        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
             .stream()
             .filter(order -> status == null || order.getStatus().equals(status))
             .map(EmployeeDetailResponse::create)
@@ -67,7 +69,9 @@ public class ParkingBoyResource {
     @CrossOrigin
     @GetMapping(value = "/username/{username}")
     public ResponseEntity<Object> getParkingBoyByUsername(@PathVariable String username) {
-        final Employee employee = employeeRepository.findByUsernameAndRole(username, RoleName.ROLE_PARKING_CLERK.toString());
+        // To do....
+//        final Employee employee = employeeRepository.findByUsernameAndRole(username, RoleName.ROLE_PARKING_CLERK.toString());
+        final Employee employee = employeeRepository.findByUsername(username);
         if (employee == null) {
             return ResponseEntity.status(404).body("employee username: " + username + " not found");
         }
@@ -78,7 +82,6 @@ public class ParkingBoyResource {
     @PostMapping(consumes = {"application/json"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
-        employee.setRole(RoleName.ROLE_PARKING_CLERK.toString());
         if (employee.getStatus() != null && !isValidStatus(employee.getStatus())) {
             return ResponseEntity.status(400).body("status: " + employee.getStatus() + " not found/support");
         }

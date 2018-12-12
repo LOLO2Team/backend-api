@@ -5,7 +5,6 @@ create table employee (
     email           varchar         NOT NULL,
     phone           varchar         NOT NULL,
     password        varchar         NOT NULL,
-    role            varchar         NOT NULL,
     status          varchar         NOT NULL DEFAULT 'WORKING',
     primary key (id),
     unique(username),

@@ -11,7 +11,6 @@ public class EmployeeDetailResponse {
     private String username;
     private String email;
     private String phone;
-    private String role;
     private String status;
     private List<ParkingLotResponse> parkingLotResponses;
 
@@ -55,14 +54,6 @@ public class EmployeeDetailResponse {
         this.phone = phone;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -79,7 +70,7 @@ public class EmployeeDetailResponse {
         this.parkingLotResponses = parkingLotResponses;
     }
 
-    public static EmployeeDetailResponse create(Long employeeId, String name, String username, String phone, String email, String role, String status) {
+    public static EmployeeDetailResponse create(Long employeeId, String name, String username, String phone, String email, String status) {
         Objects.requireNonNull(employeeId);
         Objects.requireNonNull(name);
 
@@ -89,14 +80,13 @@ public class EmployeeDetailResponse {
         response.setUsername(username);
         response.setPhone(phone);
         response.setEmail(email);
-        response.setRole(role);
         response.setStatus(status);
 
         return response;
     }
 
     public static EmployeeDetailResponse create(Employee entity) {
-        return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(), entity.getRole(),
+        return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(),
             entity.getStatus());
     }
 

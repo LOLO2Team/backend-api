@@ -4,8 +4,10 @@ import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.EmployeeResponse;
+import com.parkinglot.api.user.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +29,24 @@ public class EmployeeResource {
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
-    private EntityManager entityManager;
+    private RoleRepository roleRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public EmployeeResource(EmployeeRepository employeeRepository,
+                          BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.employeeRepository = employeeRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @PostMapping("/sign-up")
+    public void signUp(@RequestBody Employee employee) {
+        employee.setPassword(bCryptPasswordEncoder.encode(employee.getPassword()));
+        //Default role is staff
+        employee.setAuthorities(employee.getAuthorities());
+        employeeRepository.save(employee);
+        employeeRepository.flush();
+    }
 
     @CrossOrigin
     @GetMapping

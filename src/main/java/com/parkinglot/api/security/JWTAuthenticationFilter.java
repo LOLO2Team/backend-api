@@ -1,6 +1,6 @@
 package com.parkinglot.api.security;
 
-import com.parkinglot.api.user.ApplicationUser;
+import com.parkinglot.api.domain.Employee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,8 +38,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
 
-            ApplicationUser creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), ApplicationUser.class);
+            Employee creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), Employee.class);
             logger.info("Login~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~username:" + creds.getUsername() + "-----pwd:" + creds.getPassword());
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(creds.getUsername());
@@ -60,7 +60,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-        
+
         logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~username:" + ((User) auth.getPrincipal()).getUsername());
 
         String token = Jwts.builder()

@@ -1,34 +1,74 @@
 package com.parkinglot.api.domain;
 
+import com.parkinglot.api.user.Role;
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 @Table(name = "employee")
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "name", length = 32)
+    @Column(name = "NAME", length = 32, unique = true)
+    @NotNull
+    @Size(min = 4, max = 32)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "USERNAME", length = 32, unique = true)
+    @NotNull
+    @Size(min = 4, max = 32)
     private String username;
 
+    @NaturalId
+    @NotBlank
+    @Size(max = 50)
+    @Email
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @Column(nullable = false)
+    @Column(name = "PASSWORD", length = 200)
+    @NotNull
+    @Size(min = 4, max = 200)
     private String password;
 
-    @Column(nullable = false)
-    private String role;
+    //---------------------------------------------------
 
-    @Column(nullable = false)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "EMPLOYEE_AUTHORITY",
+            joinColumns = {@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
+    private List<Role> authorities;
+
+    @Column(name = "STATUS" ,nullable = false)
     private String status = "WORKING";
+
+    protected Employee() {
+    }
+
+    public Employee(String name, String username, String email, String password, List<Role> authorities) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -36,22 +76,6 @@ public class Employee {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    protected Employee() {
-    }
-
-    public Employee(String name, RoleName role) {
-        this.name = name;
-        this.username = "missed";
-        this.email = "missed";
-        this.phone = "missed";
-        this.password = "missed";
-        this.role = role.toString();
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getUsername() {
@@ -90,12 +114,12 @@ public class Employee {
 
     public void setStatus(String status) { this.status = status; }
 
-    public String getRole() {
-        return role;
+    public List<Role> getAuthorities() {
+        return authorities;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setAuthorities(List<Role> authorities) {
+        this.authorities = authorities;
     }
 }
 

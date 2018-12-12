@@ -1,5 +1,6 @@
 package com.parkinglot.api.user;
 
+import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.RoleName;
 
 import javax.persistence.*;
@@ -21,7 +22,7 @@ public class Role {
     private RoleName name;
 
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
-    private List<ApplicationUser> users;
+    private List<Employee> users;
 
     public Long getId() {
         return id;
@@ -39,11 +40,11 @@ public class Role {
         this.name = name;
     }
 
-    public List<ApplicationUser> getUsers() {
+    public List<Employee> getUsers() {
         return users;
     }
 
-    public void setUsers(List<ApplicationUser> users) {
+    public void setUsers(List<Employee> users) {
         this.users = users;
     }
 }

@@ -11,7 +11,6 @@ public class EmployeeResponse {
     private String username;
     private String email;
     private String phone;
-    private String role;
     private String status;
 
     public Long getEmployeeId() {
@@ -54,19 +53,11 @@ public class EmployeeResponse {
         this.phone = phone;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public String getStatus() { return status; }
 
     public void setStatus(String status) { this.status = status; }
 
-    public static EmployeeResponse create(Long employeeId, String name, String username, String phone, String email, String role, String status) {
+    public static EmployeeResponse create(Long employeeId, String name, String username, String phone, String email, String status) {
         Objects.requireNonNull(employeeId);
         Objects.requireNonNull(name);
 
@@ -76,14 +67,13 @@ public class EmployeeResponse {
         response.setUsername(username);
         response.setPhone(phone);
         response.setEmail(email);
-        response.setRole(role);
         response.setStatus(status);
 
         return response;
     }
 
     public static EmployeeResponse create(Employee entity) {
-        return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(), entity.getRole(), entity.getStatus());
+        return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(), entity.getStatus());
     }
 
     @JsonIgnore
