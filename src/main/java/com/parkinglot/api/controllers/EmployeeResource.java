@@ -8,12 +8,7 @@ import com.parkinglot.api.user.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
 import java.net.*;
@@ -60,7 +55,7 @@ public class EmployeeResource {
 
     @CrossOrigin
     @GetMapping(value = "/username/{username}")
-    public ResponseEntity<Object> getByEmployeeByUsername(String username) {
+    public ResponseEntity<Object> getByEmployeeByUsername(@PathVariable String username) {
         final Employee employee = employeeRepository.findByUsername(username);
         if (employee == null) {
             return ResponseEntity.status(404).body("employee username: " + username + " not found");
