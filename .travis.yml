@@ -16,19 +16,19 @@ script:
   - ./gradlew clean
   
 deploy:
-  provider: heroku
-  api_key: 744fff7d-5617-49c1-a691-e0aa1473a891
-  app: parking-lot-backend-app 
-  on:
-    branches:
-        - master 
+  - provider: heroku
+    api_key: 744fff7d-5617-49c1-a691-e0aa1473a891
+    app: parking-lot-backend-app 
+    on:
+      branches:
+          - master 
         
-  provider: heroku
-  api_key: 02ad66a3-fa5a-4f4a-a0c2-1542413b1246
-  app: parking-lot-backend-prod
-  on:
-    branches:
-        - prod
+  - provider: heroku
+    api_key: 02ad66a3-fa5a-4f4a-a0c2-1542413b1246
+    app: parking-lot-backend-prod
+    on:
+      branches:
+          - prod
 notifications:
   webhooks:
     on_success: change  # options: [always|never|change] default: always
