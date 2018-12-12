@@ -62,7 +62,8 @@ public class ParkingBoyResource {
     @GetMapping(value ="/search")
     public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoysBy(
             @RequestParam(value = "q") String expect) {
-        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+//        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
                 .stream()
                 .filter(parkingBoy -> findContain(parkingBoy, expect))
                 .map(EmployeeDetailResponse::create)
