@@ -21,7 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import javax.persistence.EntityManager;
 import java.util.*;
 
+import static com.parkinglot.api.WebTestUtil.getContentAsObject;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -40,60 +42,114 @@ public class ParkingLotTests {
     @Autowired
     private MockMvc mvc;
 
+    String getAccessToken() throws Exception {
+        MvcResult signUpResult = mvc.perform(post("/users/sign-up")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .andReturn();
+        MvcResult loginResult = mvc.perform(post("/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .andReturn();
+        return loginResult.getResponse().getHeader("Authorization");
+    }
+
     @Test
-    public void should_get_parking_lots() throws Exception {
+    public void should_get_all_parking_lots() throws Exception {
+        // Given
+        final ParkingLot parkingLot =parkingLotRepository.save(new ParkingLot("Testing parking lot", 10));
+        parkingLotRepository.flush();
+        String token = getAccessToken();
+
+        // When
+        final MvcResult result = mvc.perform(MockMvcRequestBuilders
+            .get("/parkinglots")
+            .header("Authorization", token))
+            .andReturn();
+
+        // Then
+        final ParkingLotResponse[] parkingLotResponses = getContentAsObject(result, ParkingLotResponse[].class);
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals(1, parkingLotResponses.length);
+        assertEquals("Testing parking lot", parkingLotResponses[0].getParkingLotName());
+        assertEquals(10, parkingLotResponses[0].getCapacity());
+    }
+
+    @Test
+    public void should_assign_parking_lot_and_get_parking_available_parking_lots_by_employee_id() throws Exception {
         // Given
         final Employee employee = new Employee("TestBoy", RoleName.ROLE_PARKING_CLERK);
         employeeRepository.save(employee);
         employeeRepository.flush();
-        final ParkingLot parkinglot = parkingLotRepository.save(new ParkingLot("Testing parking lot",10));
+        final ParkingLot testBoyParkingLot = parkingLotRepository.save(new ParkingLot("TestBoy parking lot", 10));
+        final ParkingLot otherParkingLot = parkingLotRepository.save(new ParkingLot("Parking lot of other parking boy", 10));
         parkingLotRepository.flush();
+        String token = getAccessToken();
 
-        final Employee parkingBoyFromDB = employeeRepository.findByNameAndRole("TestBoy", RoleName.ROLE_PARKING_CLERK.toString());
-        final ParkingLot parkingLotFromDB = parkingLotRepository.findByParkingLotName("Testing parking lot");
-
-        final Long employeeId = parkingBoyFromDB.getId();
         // When
-
         final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
-                .put("/parkinglots/"+parkingLotFromDB.getId()+"/employeeId/"+employeeId))
-                .andReturn();
-
-        // When
+            .put("/parkinglots/" + testBoyParkingLot.getId() + "/employeeId/" + employee.getId())
+            .header("Authorization", token))
+            .andReturn();
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .get("/parkinglots?employeeId="+employeeId))
-                .andReturn();
+            .get("/parkinglots?employeeId=" + employee.getId())
+            .header("Authorization", token))
+            .andReturn();
 
         // Then
+        final ParkingLotResponse[] parkingLotResponses = getContentAsObject(result, ParkingLotResponse[].class);
         assertEquals(201, putResult.getResponse().getStatus());
         assertEquals(200, result.getResponse().getStatus());
-
-        final ParkingLot updatedParkingLot = parkingLotRepository.findByParkingLotName("Testing parking lot");
-
-        assertEquals("Testing parking lot", updatedParkingLot.getParkingLotName());
-        assertEquals(10, updatedParkingLot.getCapacity());
-        assertEquals(employeeId, updatedParkingLot.getEmployeeId());
+        assertEquals(1, parkingLotResponses.length);
+        assertEquals("TestBoy parking lot", parkingLotResponses[0].getParkingLotName());
+        assertEquals(10, parkingLotResponses[0].getCapacity());
     }
 
+//    @Test
+//    public void should_not_get_parking_lots_by_employee_id_if_parking_lot_is_full() throws Exception {
+//        // Given
+//        final Employee employee = new Employee("TestBoy", RoleName.ROLE_PARKING_CLERK);
+//        employeeRepository.save(employee);
+//        employeeRepository.flush();
+//        final ParkingLot testBoyParkingLot = parkingLotRepository.save(new ParkingLot("TestBoy parking lot", 0));
+//        parkingLotRepository.flush();
+//        String token = getAccessToken();
+//
+//        // When
+//        final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
+//            .put("/parkinglots/" + testBoyParkingLot.getId() + "/employeeId/" + employee.getId())
+//            .header("Authorization", token))
+//            .andReturn();
+//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
+//            .get("/parkinglots?employeeId=" + employee.getId())
+//            .header("Authorization", token))
+//            .andReturn();
+//
+//        // Then
+//        final ParkingLotResponse[] parkingLotResponses = getContentAsObject(result, ParkingLotResponse[].class);
+//        assertEquals(201, putResult.getResponse().getStatus());
+//        assertEquals(200, result.getResponse().getStatus());
+//        assertEquals(1, parkingLotResponses.length);
+//        assertEquals("TestBoy parking lot", parkingLotResponses[0].getParkingLotName());
+//        assertEquals(10, parkingLotResponses[0].getCapacity());
+//    }
+
     @Test
-    public void should_post_append_parking_lot_to_DB() throws Exception {
+    public void should_post_parking_lot_to_DB() throws Exception {
         // Given
         String json = "{\"parkingLotName\" : \"TestPark123\", \"capacity\" : 10}";
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .post("/parkinglots")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andReturn();
+            .post("/parkinglots")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andReturn();
 
         // Then
         assertEquals(201, result.getResponse().getStatus());
 
         List<ParkingLot> parkingLots = parkingLotRepository.findAll();
-
-        // Should not use getOne() because it only get a proxy object from cache
-        // Should use findOne() instead
 
         Optional<ParkingLot> actualParkingLot = parkingLotRepository.findById(1L);
 
@@ -103,129 +159,4 @@ public class ParkingLotTests {
         assertEquals("TestPark123", parkingLot.getParkingLotName());
         assertEquals(10, parkingLot.getCapacity());
     }
-
-
-//
-//    @Test
-//    public void should_throws_exception_when_parkingLotID_is_too_long(){
-//        //Given A parking boy with employeeID too long
-//        final String parkingLotID = "IdThatISTooLongggggggggggggggggggggggggggggggggg";
-//        final int capacity = 10;
-//        ParkingLot parkingLot = new ParkingLot(parkingLotID, capacity);
-//        //When save into repository should throw exception
-//        AssertHelper.assertThrows(Exception.class, () ->{
-//            parkingLotRepository.save(parkingLot);
-//            parkingLotRepository.flush();
-//        });
-//    }
-//
-//    @Test
-//    public void should_throws_exception_when_capacity_is_out_of_range(){
-//        //Given A parking boy with employeeID too long
-//        final String parkingLotID = "TestPark456";
-//        final int capacityThatIsTooLow = 0;
-//
-//        ParkingLot parkingLotWithLowCapacity = new ParkingLot(parkingLotID, capacityThatIsTooLow);
-//        //When save into repository should throw exception
-//        AssertHelper.assertThrows(Exception.class, () ->{
-//            parkingLotRepository.save(parkingLotWithLowCapacity);
-//            parkingLotRepository.flush();
-//        });
-//
-//        final int capacityThatIsTooHigh = 101;
-//        ParkingLot parkingLotWithHighCapacity = new ParkingLot(parkingLotID, capacityThatIsTooHigh);
-//        AssertHelper.assertThrows(Exception.class, () ->{
-//            parkingLotRepository.save(parkingLotWithHighCapacity);
-//            parkingLotRepository.flush();
-//        });
-//    }
-//
-//    @Test
-//    public void should_put_parking_lot_to_parkingBoy() throws Exception{
-//        // Given
-//        String employee_id = "Test123";
-//        String json = "{\"parkingLotID\" : \"TestPark123\", \"capacity\" : 10}";
-//        employeeRepository.save(new Employee(employee_id));
-//        employeeRepository.flush();
-//        parkingLotRepository.save(new ParkingLot("TestPark123",10));
-//        parkingLotRepository.flush();
-//
-//        // When
-//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-//                .put("/parkingboys/"+employee_id)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(json))
-//                .andReturn();
-//
-//        // Then
-//        assertEquals(200, result.getResponse().getStatus());
-//
-//        List<ParkingLot> parkingLots = parkingLotRepository.findAll().stream().filter(parkingLot -> parkingLot.getParkingLotID().equals("TestPark123")).collect(Collectors.toList());
-//
-//        ParkingLot actualParkingLot = parkingLots.get(0);
-//
-//        List<Employee> parkingBoys = employeeRepository.findAll().stream().filter(parkingBoy -> parkingBoy.getEmployeeId().equals("Test123")).collect(Collectors.toList());
-//
-//        Employee actualParkingBoy = parkingBoys.get(0);
-//
-//        final ParkingLotResponse parkingLot = ParkingLotResponse.create(actualParkingLot);
-//
-//        final EmployeeResponse parkingBoy = EmployeeResponse.create(actualParkingBoy.getEmployeeId(),actualParkingBoy.getParkingLotList());
-//
-//        final Boolean ifAcutalParkingLotFoundInParkingBoy = parkingBoy.getParkingLots().stream().allMatch(parkingLot1 -> parkingLot1.getParkingLotID().equals("TestPark123"));
-//
-//        assertEquals("Test123", parkingLot.getParkingBoy().getEmployeeId());
-//        assertTrue(ifAcutalParkingLotFoundInParkingBoy);
-//    }
-//
-//    @Test
-//    public void should_get_parking_boys_with_id() throws Exception {
-//        // Given
-//        final Employee boy = employeeRepository.save(new Employee("boy"));
-//        employeeRepository.flush();
-//        final ParkingLot lot = parkingLotRepository.save(new ParkingLot("lot",3));
-//        parkingLotRepository.flush();
-//        String json = "{\"parkingLotID\" : \"lot\", \"capacity\" : 3}";
-//        final MvcResult resultThatIsNotImportant = mvc.perform(MockMvcRequestBuilders
-//                .put("/parkingboys/"+"boy")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(json))
-//                .andReturn();
-//
-//        // When
-//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-//                .get("/parkingboys/boy"))
-//                .andReturn();
-//
-//        // Then
-//        assertEquals(200, result.getResponse().getStatus());
-//
-//        final EmployeeResponse parkingBoy = getContentAsObject(result, EmployeeResponse.class);
-//
-//        assertEquals("boy", parkingBoy.getEmployeeId());
-//        assertEquals("lot", parkingBoy.getParkingLots().get(0).getParkingLotID());
-//    }
-//
-//    @Test
-//    public void should_throws_exception_when_get_parking_boys_with_wrong_id() throws Exception {
-//        // Given
-//        final Employee boy = employeeRepository.save(new Employee("boy"));
-//        employeeRepository.flush();
-//        final ParkingLot lot = parkingLotRepository.save(new ParkingLot("lot",3));
-//        parkingLotRepository.flush();
-//        String json = "{\"parkingLotID\" : \"lot\", \"capacity\" : 3}";
-//        final MvcResult resultThatIsNotImportant = mvc.perform(MockMvcRequestBuilders
-//                .put("/parkingboys/"+"boy")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(json))
-//                .andReturn();
-//
-//        // When
-//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-//                .get("/parkingboys/wrongboy"))
-//                .andReturn();
-//
-//        // Then
-//        assertEquals(404, result.getResponse().getStatus());
-//    }
 }

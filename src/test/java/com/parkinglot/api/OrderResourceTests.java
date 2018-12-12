@@ -25,6 +25,8 @@ import javax.persistence.EntityManager;
 
 import static com.parkinglot.api.WebTestUtil.getContentAsObject;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -44,6 +46,18 @@ public class OrderResourceTests {
     @Autowired
     private MockMvc mvc;
 
+    String getAccessToken() throws Exception {
+        MvcResult signUpResult = mvc.perform(post("/users/sign-up")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .andReturn();
+        MvcResult loginResult = mvc.perform(post("/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .andReturn();
+        return loginResult.getResponse().getHeader("Authorization");
+    }
+
     @Test
     public void should_get_all_pending_orders() throws Exception {
         // Given
@@ -52,8 +66,8 @@ public class OrderResourceTests {
         String expectStatus = "pending";
 
         // When
-        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-            .get("/orders?status=" + expectStatus))
+        final MvcResult result = mvc
+            .perform(get("/orders?status=" + expectStatus))
             .andReturn();
 
         // Then
@@ -71,8 +85,8 @@ public class OrderResourceTests {
         orderRepository.flush();
 
         // When
-        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-            .get("/orders/" + newOrder.getId()))
+        final MvcResult result = mvc.perform(get("/orders/" + newOrder.getId())
+            .header("Authorization", getAccessToken()))
             .andReturn();
 
         // Then
@@ -88,15 +102,13 @@ public class OrderResourceTests {
         String vehicleNumber = "CarToAdd";
 
         // When
-        final MvcResult createOrderResult = mvc.perform(MockMvcRequestBuilders
-            .post("/orders")
+        final MvcResult createOrderResult = mvc.perform(post("/orders")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"vehicleNumber\":\"" + vehicleNumber + "\"}"))
             .andReturn();
 
         // When
-        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-            .get("/orders"))
+        final MvcResult result = mvc.perform(get("/orders"))
             .andReturn();
 
         // Then
@@ -116,7 +128,8 @@ public class OrderResourceTests {
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId()))
+            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId())
+            .header("Authorization", getAccessToken()))
             .andReturn();
 
         // Then
@@ -125,56 +138,61 @@ public class OrderResourceTests {
 
         assertEquals("car", orderResponse.getVehicleNumber());
         assertEquals("parking", orderResponse.getOrderStatus());
-        assertEquals(newParkingBoy.getId(), (long)orderResponse.getEmployeeId());
+        assertEquals(newParkingBoy.getId(), orderResponse.getEmployeeId());
     }
 
     @Test
     public void should_update_status_from_parking_to_parked_and_assign_the_parking_lot_id_to_order() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy",RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
+        String token = getAccessToken();
 
         // When
         final MvcResult putEmployeeIdResult = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId()))
+            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId())
+            .header("Authorization", token))
             .andReturn();
 
         final MvcResult putParkingLotIdResult = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/parkingLotId/" + newParkingLot.getId()))
+            .put("/orders/" + newOrder.getId() + "/parkingLotId/" + newParkingLot.getId())
+            .header("Authorization", token))
             .andReturn();
 
         // Then
         assertEquals(200, putEmployeeIdResult.getResponse().getStatus());
         assertEquals(200, putParkingLotIdResult.getResponse().getStatus());
 
-
         final OrderResponse orderResponse = getContentAsObject(putParkingLotIdResult, OrderResponse.class);
 
         assertEquals("car", orderResponse.getVehicleNumber());
         assertEquals("parked", orderResponse.getOrderStatus());
-        assertEquals(newParkingBoy.getId(), (long)orderResponse.getEmployeeId());
-        assertEquals(newParkingLot.getId(), (long)orderResponse.getParkingLotId());
+        assertEquals(newParkingBoy.getId(), orderResponse.getEmployeeId());
+        assertEquals(newParkingLot.getId(), orderResponse.getParkingLotId());
     }
 
     @Test
     public void should_update_status_from_parked_to_parking() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy",RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
+        String token = getAccessToken();
 
         // When
         final MvcResult putEmployeeIdResult = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId()))
+            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId())
+            .header("Authorization", token))
             .andReturn();
         final MvcResult putParkingLotIdResult = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/parkingLotId/" + newParkingLot.getId()))
+            .put("/orders/" + newOrder.getId() + "/parkingLotId/" + newParkingLot.getId())
+            .header("Authorization", token))
             .andReturn();
         final MvcResult customerCreateFetchRequestResult = mvc.perform(MockMvcRequestBuilders
-            .patch("/orders/" + newOrder.getId()))
+            .patch("/orders/" + newOrder.getId())
+            .header("Authorization", token))
             .andReturn();
-
 
         // Then
         assertEquals(200, putEmployeeIdResult.getResponse().getStatus());
@@ -191,23 +209,27 @@ public class OrderResourceTests {
     public void should_update_status_from_fetching_to_fetched() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy",RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
+        String token = getAccessToken();
 
         // When
         final MvcResult putEmployeeIdResult = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId()))
+            .put("/orders/" + newOrder.getId() + "/employeeId/" + newParkingBoy.getId())
+            .header("Authorization", token))
             .andReturn();
         final MvcResult putParkingLotIdResult = mvc.perform(MockMvcRequestBuilders
-            .put("/orders/" + newOrder.getId() + "/parkingLotId/" + newParkingLot.getId()))
+            .put("/orders/" + newOrder.getId() + "/parkingLotId/" + newParkingLot.getId())
+            .header("Authorization", token))
             .andReturn();
         final MvcResult customerCreateFetchRequestResult = mvc.perform(MockMvcRequestBuilders
-            .patch("/orders/" + newOrder.getId()))
+            .patch("/orders/" + newOrder.getId())
+            .header("Authorization", token))
             .andReturn();
         final MvcResult parkingBoyFinishFetchResult = mvc.perform(MockMvcRequestBuilders
-            .delete("/orders/" + newOrder.getId()))
+            .delete("/orders/" + newOrder.getId())
+            .header("Authorization", token))
             .andReturn();
-
 
         // Then
         assertEquals(200, putEmployeeIdResult.getResponse().getStatus());
