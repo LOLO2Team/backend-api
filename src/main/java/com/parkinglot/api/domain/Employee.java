@@ -28,7 +28,7 @@ public class Employee {
     private String role;
 
     @Column(nullable = false)
-    private String status = "OFFDUTY";
+    private String status = "WORKING";
 
     public String getName() {
         return name;

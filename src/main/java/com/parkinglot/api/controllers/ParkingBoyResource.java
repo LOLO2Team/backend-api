@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
@@ -35,9 +36,11 @@ public class ParkingBoyResource {
 
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<EmployeeResponse>> getAllParkingBoys() {
+    public ResponseEntity<List<EmployeeResponse>> getParkingBoys(
+        @RequestParam(value = "status", required = false) String status) {
         final List<EmployeeResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
             .stream()
+            .filter(order -> status == null || order.getStatus().equals(status))
             .map(EmployeeResponse::create)
             .collect(Collectors.toList());
         return ResponseEntity.ok(parkingBoys);
@@ -57,6 +60,9 @@ public class ParkingBoyResource {
     @PostMapping(consumes = {"application/json"})
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
         employee.setRole(RoleName.ROLE_PARKING_CLERK.toString());
+        if (employee.getStatus() != null && !isValidStatus(employee.getStatus())) {
+            return ResponseEntity.status(400).body("status: " + employee.getStatus() + " not found/support");
+        }
         final Employee newParkingBoy = employeeRepository.save(employee);
         if (newParkingBoy == null) {
             return ResponseEntity.status(400).body("parking boy created fail");
@@ -68,8 +74,8 @@ public class ParkingBoyResource {
     @PutMapping(value = "/{employeeId}/status/{status}")
     public ResponseEntity<Object> updateStatus(@PathVariable Long employeeId, @PathVariable String status) {
         Optional<Employee> employee = employeeRepository.findById(employeeId);
-        if(!Arrays.stream(EmployeeStatus.values()).anyMatch((t) -> t.name().equals(status))){
-            return ResponseEntity.status(400).body("status: "+status+ " not found/support");
+        if (!isValidStatus(status)) {
+            return ResponseEntity.status(400).body("status: " + status + " not found/support");
         }
         if (!employee.isPresent()) {
             return ResponseEntity.status(404).body("parking boy not found");
@@ -77,5 +83,9 @@ public class ParkingBoyResource {
         employee.get().setStatus(status);
         employeeRepository.save(employee.get());
         return ResponseEntity.ok(EmployeeResponse.create(employee.get()));
+    }
+
+    boolean isValidStatus(String status) {
+        return Arrays.stream(EmployeeStatus.values()).anyMatch((t) -> t.name().equals(status));
     }
 }
