@@ -26,8 +26,6 @@ INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employe
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9006,'Old Grand LOT', 5, 0, null);
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9007,'New Lot besides Sea', 5, 0, null);
 
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99994, 12345678, 'pending', null, null);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99995, 13869403, 'pending', null, null);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99996, 35804146, 'parking', null, 0);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99997, 56383021, 'parked', 0, 0);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99998, 35466842, 'fetching', 0, 0);
@@ -39,15 +37,6 @@ INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, emp
 
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99100, 'PROCAR', 'pending', null, null);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99101, 'HELLO', 'pending', null, null);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99102, 'DEMO', 'pending', null, null);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99103, 'IAMACAR', 'pending', null, null);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99104, 'HEMIN', 'pending', null, null);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99105, 'LOCA', 'pending', null, null);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99106, '135AAA', 'pending', null, null);
 
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99201, 'HICA', 'parked', 0, 0);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99202, 'HFIA', 'parked', 0, 0);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99203, 'INFRA', 'parked', 0, 0);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99204, 'IRES', 'parked', 0, 0);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99205, 'BBB', 'parked', 0, 0);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99206, '315ZZ', 'parked', 0, 0);
