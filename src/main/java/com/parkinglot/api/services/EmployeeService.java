@@ -80,16 +80,12 @@ public class EmployeeService {
             .collect(Collectors.toList());
     }
 
-    public List<EmployeeDetailResponse> search(String expect){
-        List<EmployeeDetailResponse> employees = employeeRepository.findAll()
+    public List<EmployeeResponse> search(String expect){
+        List<EmployeeResponse> employees = employeeRepository.findAll()
                 .stream()
                 .filter(parkingBoy -> findContain(parkingBoy, expect))
-                .map(EmployeeDetailResponse::create)
+                .map(EmployeeResponse::create)
                 .collect(Collectors.toList());
-        employees.forEach(parkingBoy -> {
-                    appendParkingLot(parkingBoy);
-                }
-        );
         return employees;
     }
 
