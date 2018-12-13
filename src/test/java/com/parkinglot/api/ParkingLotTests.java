@@ -54,6 +54,18 @@ public class ParkingLotTests {
         return loginResult.getResponse().getHeader("Authorization");
     }
 
+    String getManagerAccessToken() throws Exception {
+        mvc.perform(post("/employees/sign-up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"manager\",\"username\":\"manager\",\"password\":\"manager\",\"email\":\"manager@mail.com\",\"phone\":\"12332123\",\"authorities\":[{\"name\":\"ROLE_MANAGER\"}]}"))
+                .andReturn();
+        MvcResult loginResult = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\":\"manager\", \"password\":\"manager\"}"))
+                .andReturn();
+        return loginResult.getResponse().getHeader("Authorization");
+    }
+
     @Test
     public void should_get_all_parking_lots() throws Exception {
         // Given
@@ -76,6 +88,26 @@ public class ParkingLotTests {
     }
 
     @Test
+    public void should_parking_clerk_assign_parking_lot_and_return_403_forbidden() throws Exception {
+        // Given
+        Employee newParkingBoy =
+                employeeRepository.save(getTestingParkingBoy("newBoy"));
+        employeeRepository.flush();
+        final ParkingLot testBoyParkingLot = parkingLotRepository.save(new ParkingLot("TestBoy parking lot", 10));
+        final ParkingLot otherParkingLot = parkingLotRepository.save(new ParkingLot("Parking lot of other parking boy", 10));
+        parkingLotRepository.flush();
+        String token = getAccessToken();
+
+        // When
+        final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
+                .put("/parkinglots/" + testBoyParkingLot.getId() + "/employeeId/" + newParkingBoy.getId())
+                .header("Authorization", token))
+                .andReturn();
+
+        assertEquals(403, putResult.getResponse().getStatus());
+    }
+
+    @Test
     public void should_assign_parking_lot_and_get_parking_available_parking_lots_by_employee_id() throws Exception {
         // Given
         Employee newParkingBoy =
@@ -84,7 +116,7 @@ public class ParkingLotTests {
         final ParkingLot testBoyParkingLot = parkingLotRepository.save(new ParkingLot("TestBoy parking lot", 10));
         final ParkingLot otherParkingLot = parkingLotRepository.save(new ParkingLot("Parking lot of other parking boy", 10));
         parkingLotRepository.flush();
-        String token = getAccessToken();
+        String token = getManagerAccessToken();
 
         // When
         final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
