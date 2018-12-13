@@ -7,8 +7,6 @@ import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.EmployeeDetailResponse;
 import com.parkinglot.api.models.EmployeeResponse;
 import com.parkinglot.api.services.EmployeeService;
-import com.parkinglot.api.user.Role;
-import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.user.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.*;
 import java.util.*;
-import java.util.stream.*;
 
 @RestController
 @RequestMapping(value = {"/employees", "/parkingboys"})
@@ -138,9 +135,9 @@ public class EmployeeResource {
 
     @CrossOrigin
     @GetMapping(value = "/search")
-    public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoysBy(
+    public ResponseEntity<List<EmployeeResponse>> getParkingBoysBy(
             @RequestParam(value = "q") String expect) {
-        List<EmployeeDetailResponse> employees = employeeService.search(expect);
+        List<EmployeeResponse> employees = employeeService.search(expect);
         return ResponseEntity.ok(employees);
     }
 
