@@ -7,6 +7,7 @@ import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.EmployeeDetailResponse;
 import com.parkinglot.api.models.EmployeeResponse;
 import com.parkinglot.api.services.EmployeeService;
+import com.parkinglot.api.user.Role;
 import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.user.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,11 @@ public class EmployeeResource {
 
     @Autowired
     public EmployeeResource(EmployeeRepository employeeRepository,
-        BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeService employeeService) {
+        BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeService employeeService, RoleRepository roleRepository) {
         this.employeeRepository = employeeRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.employeeService = employeeService;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/sign-up")
@@ -150,4 +152,23 @@ public class EmployeeResource {
         );
         return ResponseEntity.ok(parkingBoys);
     }
+
+    @CrossOrigin
+    @PutMapping(value = "/{employeeId}/roles/{role}")
+    public ResponseEntity<Object> updateRole(@PathVariable Long employeeId, @PathVariable String role) {
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (!employee.isPresent()) {
+            return ResponseEntity.status(404).body("parking boy not found");
+        }
+
+        Optional<Role> newRole = roleRepository.findByName(RoleName.valueOf(role));
+        List<Role> newRoleList = new ArrayList<>();
+        newRoleList.add(newRole.get());
+        employee.get().setAuthorities(newRoleList);
+       System.out.println("Employee Role: " + newRole.get().getName());
+        employeeRepository.save(employee.get());
+        employeeRepository.flush();
+        return ResponseEntity.ok(EmployeeResponse.create(employee.get()));
+    }
+
 }
