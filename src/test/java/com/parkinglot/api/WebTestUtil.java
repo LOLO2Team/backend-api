@@ -19,7 +19,7 @@ class WebTestUtil {
     }
 
     public static Employee getTestingParkingBoy(String name){
-        return new Employee(name, "newBoy", "boy@mail", "password",
+        return new Employee(name, name, "boy@mail", "password",
             Arrays.asList(RoleName.ROLE_PARKING_CLERK));
     }
 }
