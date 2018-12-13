@@ -12,6 +12,16 @@ public class EmployeeResponse {
     private String email;
     private String phone;
     private String status;
+    private List<String> roles;
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> role) {
+        this.roles = roles;
+    }
+
 
     public Long getEmployeeId() {
         return employeeId;

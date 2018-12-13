@@ -1,5 +1,6 @@
 package com.parkinglot.api.controllers;
 
+import com.google.gson.Gson;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
+import java.io.Console;
 import java.net.*;
 import java.util.*;
 import java.util.stream.*;
@@ -61,6 +63,19 @@ public class EmployeeResource {
             return ResponseEntity.status(404).body("employee username: " + username + " not found");
         }
         return ResponseEntity.ok(EmployeeResponse.create(employee));
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/username/{username}/roles", produces = {"application/json"})
+    public ResponseEntity<Object> getRoleByEmployeeByUsername(@PathVariable String username) {
+        final Employee employee = employeeRepository.findByUsername(username);
+        if (employee == null) {
+            return ResponseEntity.status(404).body("employee username: " + username + " not found");
+        }
+        List<String> roles = new ArrayList<>();
+        employee.getAuthorities().forEach(role -> roles.add(role.getName().toString()));
+        String json = new Gson().toJson(roles);
+        return ResponseEntity.ok(json);
     }
 
     @CrossOrigin
