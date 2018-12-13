@@ -8,6 +8,7 @@ import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.OrderResponse;
 import com.parkinglot.api.models.OrderTicketResponse;
+import com.parkinglot.api.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,8 @@ public class OrderResource {
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
+    private OrderService orderService;
+    @Autowired
     private EntityManager entityManager;
 
     public final static String ORDER_STATUS_PENDING = "pending";
@@ -60,11 +63,7 @@ public class OrderResource {
     public ResponseEntity<List<OrderResponse>> getOrders(
         @RequestParam(value = "status", required = false) String status,
         @RequestParam(value = "employeeId", required = false) String employeeId) {
-        List<OrderResponse> orders = orderRepository.findAll().stream()
-            .filter(order -> status == null || order.getOrderStatus().equals(status))
-            .filter(order -> employeeId == null || (order.getEmployeeId()!=null && order.getEmployeeId()==Long.parseLong(employeeId)))
-            .map(OrderResponse::create)
-            .collect(Collectors.toList());
+        List<OrderResponse> orders = orderService.getOrders(status, employeeId);
         return ResponseEntity.ok(orders);
     }
 
