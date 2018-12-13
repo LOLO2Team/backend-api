@@ -1,11 +1,17 @@
 package com.parkinglot.api.controllers;
 
-import com.parkinglot.api.domain.*;
+import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.domain.EmployeeRepository;
+import com.parkinglot.api.domain.OrderRepository;
+import com.parkinglot.api.domain.ParkingLot;
+import com.parkinglot.api.domain.ParkingLotRepository;
+import com.parkinglot.api.domain.ParkingLotStatus;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +106,24 @@ public class ParkingLotResource {
     }
 
     @CrossOrigin
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "/{parkingLotId}/employeeId", produces = {"application/json"})
+    public ResponseEntity<String> removeAssignedParkingLot(@PathVariable Long parkingLotId) {
+
+        Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
+        if (!parkingLot.isPresent()) {
+            return ResponseEntity.status(404).body("parking lot id:" + parkingLotId + " not found");
+        }
+
+        parkingLot.get().setEmployeeId(null);
+        if (parkingLotRepository.save(parkingLot.get()) != null) {
+            return ResponseEntity.created(URI.create("/parkinglots/" + parkingLot.get().getId())).build();
+        }
+        parkingLotRepository.flush();
+        return ResponseEntity.badRequest().build();
+    }
+
+    @CrossOrigin
     @PostMapping
     public ResponseEntity<String> add(@RequestBody ParkingLot parkingLot) {
         if (parkingLotRepository.save(parkingLot) != null) {
@@ -123,6 +147,9 @@ public class ParkingLotResource {
         }
         if (!parkingLot.isPresent()) {
             return ResponseEntity.status(404).body("parking lot not found");
+        }
+        if (status.equals(ParkingLotStatus.OPEN.name()) && parkingLot.get().getEmployeeId()!=null) {
+            return ResponseEntity.status(409).body("this parking lot is assigned to parking boy: "+parkingLot.get().getEmployeeId());
         }
         parkingLot.get().setParkingLotStatus(status);
         parkingLotRepository.save(parkingLot.get());

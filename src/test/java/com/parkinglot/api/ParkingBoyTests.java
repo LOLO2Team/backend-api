@@ -3,7 +3,7 @@ package com.parkinglot.api;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.domain.RoleName;
+import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.models.EmployeeResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;

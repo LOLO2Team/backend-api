@@ -1,7 +1,6 @@
 package com.parkinglot.api.user;
 
 import com.parkinglot.api.domain.Employee;
-import com.parkinglot.api.domain.RoleName;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

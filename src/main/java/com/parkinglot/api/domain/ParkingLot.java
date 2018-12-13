@@ -1,5 +1,7 @@
 package com.parkinglot.api.domain;
 
+import org.springframework.lang.Nullable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ public class ParkingLot {
     private String parkingLotName;
     private int capacity;
     private int reservedSpace;
+    @Nullable
     private Long employeeId;
     private String parkingLotStatus = "OPEN";
 
