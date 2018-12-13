@@ -39,12 +39,12 @@ public class OrderResource {
     @Autowired
     private EntityManager entityManager;
 
-    final static String ORDER_STATUS_PENDING = "pending";
-    final static String ORDER_STATUS_PARKING = "parking";
-    final static String ORDER_STATUS_PARKED = "parked";
-    final static String ORDER_STATUS_FETCHING = "fetching";
-    final static String ORDER_STATUS_FETCHED = "fetched";
-    final static String ORDER_STATUS_CANCEL = "cancel";
+    public final static String ORDER_STATUS_PENDING = "pending";
+    public final static String ORDER_STATUS_PARKING = "parking";
+    public final static String ORDER_STATUS_PARKED = "parked";
+    public final static String ORDER_STATUS_FETCHING = "fetching";
+    public final static String ORDER_STATUS_FETCHED = "fetched";
+    public final static String ORDER_STATUS_CANCEL = "cancel";
 
     @CrossOrigin
     @PostMapping(produces = {"application/json"}, consumes = {"application/json"})

@@ -4,6 +4,9 @@ INSERT INTO employee (id, name, username, email, phone, password, status) VALUES
 INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9996, 'Kate', 'kate', 'k@mail.com', 98563201, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'FROZEN');
 INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9997, 'Mo', 'mo', 'mo@mail.com', 95632501, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'FROZEN');
 INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9998, 'admin', 'admin', 'admin@mail.com', 51245879, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'WORKING');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9999, 'human', 'human', 'human@mail.com', 15423568, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'WORKING');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (10000, 'manager', 'manager', 'manager@mail.com', 15268798, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'WORKING');
+
 
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(0, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9994, 9992);
@@ -11,6 +14,8 @@ INSERT INTO employee_authority (employee_id, authority_id)VALUES(9995, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9996, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9997, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9998, 9999);
+INSERT INTO employee_authority (employee_id, authority_id)VALUES(9999, 9994);
+INSERT INTO employee_authority (employee_id, authority_id)VALUES(10000, 9993);
 
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (0,'Science Parking Lot', 50, 0, 0);
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9001,'Ocean Parking Area', 10, 0, 0);
