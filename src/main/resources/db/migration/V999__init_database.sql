@@ -1,16 +1,16 @@
-INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (0, 'Locki', 'locki999', 'locki@mail.com', 87562153, '123','WORKING');
-INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9994, 'Rex', 'rexlo', 'rexxx@mail.com', 68541257, 'password','WORKING');
-INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9995, 'Jacky', 'jackyboy', 'jk@ma.com', 12357986, 'password', 'WORKING');
-INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9996, 'Kate', 'kate', 'k@mail.com', 98563201, 'password', 'FROZEN');
-INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9997, 'Mo', 'mo', 'mo@mail.com', 95632501, 'password', 'FROZEN');
-INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9998, 'admin', 'admin', 'admin@mail.com', 51245879, 'admin', 'WORKING');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (0, 'Locki', 'locki999', 'locki@mail.com', 87562153, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG','WORKING');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9994, 'Rex', 'rexlo', 'rexxx@mail.com', 68541257, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG','WORKING');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9995, 'Jacky', 'jackyboy', 'jk@ma.com', 12357986, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'WORKING');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9996, 'Kate', 'kate', 'k@mail.com', 98563201, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'FROZEN');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9997, 'Mo', 'mo', 'mo@mail.com', 95632501, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'FROZEN');
+INSERT INTO employee (id, name, username, email, phone, password, status) VALUES (9998, 'admin', 'admin', 'admin@mail.com', 51245879, '$2a$10$DJIH.TaCpm/ILwW9yf937OZl2KvOCFOzkaSDScYGfH5cQA7kOPlFG', 'WORKING');
 
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(0, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9994, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9995, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9996, 9992);
 INSERT INTO employee_authority (employee_id, authority_id)VALUES(9997, 9992);
-INSERT INTO employee_authority (employee_id, authority_id)VALUES(9998, 1);
+INSERT INTO employee_authority (employee_id, authority_id)VALUES(9998, 9999);
 
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (0,'Science Parking Lot', 50, 0, 0);
 INSERT INTO parking_lot (id, parking_lot_name, capacity, reserved_space, employee_id) VALUES (9001,'Ocean Parking Area', 10, 0, 0);

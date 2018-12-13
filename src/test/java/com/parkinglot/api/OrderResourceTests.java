@@ -6,7 +6,7 @@ import com.parkinglot.api.domain.Order;
 import com.parkinglot.api.domain.OrderRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.domain.RoleName;
+import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.models.OrderResponse;
 import com.parkinglot.api.models.OrderTicketResponse;
 import org.junit.Test;
@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class OrderResourceTests {
 
     @Autowired

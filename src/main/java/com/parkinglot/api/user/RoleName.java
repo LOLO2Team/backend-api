@@ -1,4 +1,4 @@
-package com.parkinglot.api.domain;
+package com.parkinglot.api.user;
 
 public enum RoleName {
     ROLE_EMPLOYEE,
