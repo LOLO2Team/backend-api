@@ -8,6 +8,7 @@ import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.models.EmployeeDetailResponse;
 import com.parkinglot.api.models.EmployeeResponse;
 import com.parkinglot.api.models.ParkingLotResponse;
+import com.parkinglot.api.user.Role;
 import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.user.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class EmployeeService {
     private RoleRepository roleRepository;
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private ParkingLotService parkingLotService;
 
 
     public EmployeeResponse findByUsername(String username) {
@@ -52,14 +55,10 @@ public class EmployeeService {
             .map(ParkingLotResponse::create)
             .collect(Collectors.toList());
         parkingBoy.setParkingLotResponses(parkingLots);
-        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(
+                parkingLotService.getCarCountInParkingLot(parkingLot.getParkingLotId())));
     }
 
-    public int getCarCountInParkingLot(Long parkingLotId) {
-        return orderRepository
-            .findByParkingLotIdAndOrderStatus(parkingLotId, ORDER_STATUS_PARKED)
-            .size();
-    }
 
     public boolean isValidStatus(String status) {
         return Arrays.stream(EmployeeStatus.values()).anyMatch((t) -> t.name().equals(status));
@@ -81,5 +80,26 @@ public class EmployeeService {
             .stream()
             .map(EmployeeResponse::create)
             .collect(Collectors.toList());
+    }
+
+    public List<EmployeeDetailResponse> search(String expect){
+        List<EmployeeDetailResponse> employees = employeeRepository.findAll()
+                .stream()
+                .filter(parkingBoy -> findContain(parkingBoy, expect))
+                .filter(parkingBoy -> isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
+                .map(EmployeeDetailResponse::create)
+                .collect(Collectors.toList());
+        employees.forEach(parkingBoy -> {
+                    appendParkingLot(parkingBoy);
+                }
+        );
+        return employees;
+    }
+
+    public List<Role> createRoleList(String role){
+        Optional<Role> newRole = roleRepository.findByName(RoleName.valueOf(role));
+        List<Role> newRoleList = new ArrayList<>();
+        newRoleList.add(newRole.get());
+        return newRoleList;
     }
 }

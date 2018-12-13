@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.stream.*;
 
 @RestController
-@RequestMapping(value={"/employees", "/parkingboys"})
+@RequestMapping(value = {"/employees", "/parkingboys"})
 public class EmployeeResource {
 
     @Autowired
@@ -45,7 +45,7 @@ public class EmployeeResource {
 
     @Autowired
     public EmployeeResource(EmployeeRepository employeeRepository,
-        BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeService employeeService, RoleRepository roleRepository) {
+                            BCryptPasswordEncoder bCryptPasswordEncoder, EmployeeService employeeService, RoleRepository roleRepository) {
         this.employeeRepository = employeeRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.employeeService = employeeService;
@@ -63,9 +63,9 @@ public class EmployeeResource {
     @CrossOrigin
     @GetMapping
     public ResponseEntity<Object> getAllEmployees(
-        @RequestParam(value = "status", required = false) String status,
-        @RequestParam(value = "username", required = false) String username,
-        @RequestParam(value = "type", required = false) String type) {
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "type", required = false) String type) {
 
         if (username != null) {
             final Employee employee = employeeRepository.findByUsername(username);
@@ -73,10 +73,10 @@ public class EmployeeResource {
                 return ResponseEntity.status(404).body("employee username: " + username + " not found");
             }
             return ResponseEntity.ok(EmployeeResponse.create(employee));
-        } else if(type!=null && type.equalsIgnoreCase("parkingBoysDetail")){
+        } else if (type != null && type.equalsIgnoreCase("parkingBoysDetail")) {
             List<EmployeeDetailResponse> parkingBoys = employeeService.getParkingBoys(status);
             return ResponseEntity.ok(parkingBoys);
-        }else{
+        } else {
             final List<EmployeeResponse> Employees = employeeService.getEmployees();
             return ResponseEntity.ok(Employees);
         }
@@ -139,18 +139,9 @@ public class EmployeeResource {
     @CrossOrigin
     @GetMapping(value = "/search")
     public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoysBy(
-        @RequestParam(value = "q") String expect) {
-        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
-            .stream()
-            .filter(parkingBoy -> employeeService.findContain(parkingBoy, expect))
-            .filter(parkingBoy -> employeeService.isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
-            .map(EmployeeDetailResponse::create)
-            .collect(Collectors.toList());
-        parkingBoys.forEach(parkingBoy -> {
-                employeeService.appendParkingLot(parkingBoy);
-            }
-        );
-        return ResponseEntity.ok(parkingBoys);
+            @RequestParam(value = "q") String expect) {
+        List<EmployeeDetailResponse> employees = employeeService.search(expect);
+        return ResponseEntity.ok(employees);
     }
 
     @CrossOrigin
@@ -160,14 +151,8 @@ public class EmployeeResource {
         if (!employee.isPresent()) {
             return ResponseEntity.status(404).body("parking boy not found");
         }
-
-        Optional<Role> newRole = roleRepository.findByName(RoleName.valueOf(role));
-        List<Role> newRoleList = new ArrayList<>();
-        newRoleList.add(newRole.get());
-        employee.get().setAuthorities(newRoleList);
-       System.out.println("Employee Role: " + newRole.get().getName());
+        employee.get().setAuthorities(employeeService.createRoleList(role));
         employeeRepository.save(employee.get());
-        employeeRepository.flush();
         return ResponseEntity.ok(EmployeeResponse.create(employee.get()));
     }
 
