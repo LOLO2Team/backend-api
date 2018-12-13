@@ -78,6 +78,18 @@ public class EmployeeResource {
         return ResponseEntity.ok(json);
     }
 
+
+    @CrossOrigin
+    @GetMapping(value = "/username/{username}/id", produces = {"application/json"})
+    public ResponseEntity<Object> getIdByEmployeeByUsername(@PathVariable String username) {
+        final Employee employee = employeeRepository.findByUsername(username);
+        if (employee == null) {
+            return ResponseEntity.status(404).body("employee username: " + username + " not found");
+        }
+        String json = new Gson().toJson(employee.getId());
+        return ResponseEntity.ok(json);
+    }
+
     @CrossOrigin
     @PostMapping(consumes = {"application/json"})
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
