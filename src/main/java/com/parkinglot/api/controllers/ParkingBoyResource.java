@@ -5,13 +5,14 @@ import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.EmployeeStatus;
 import com.parkinglot.api.domain.OrderRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.domain.RoleName;
+import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.models.EmployeeDetailResponse;
 import com.parkinglot.api.models.EmployeeResponse;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,57 +42,64 @@ public class ParkingBoyResource {
     private EntityManager entityManager;
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @CrossOrigin
     @GetMapping
     public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoys(
         @RequestParam(value = "status", required = false) String status) {
-        //To do ...
-//        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
         List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
             .stream()
             .filter(order -> status == null || order.getStatus().equals(status))
+            .filter(parkingBoy -> isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
             .map(EmployeeDetailResponse::create)
             .collect(Collectors.toList());
-        parkingBoys.forEach(parkingBoy -> {appendParkingLot(parkingBoy); }
+        parkingBoys.forEach(parkingBoy -> {
+                appendParkingLot(parkingBoy);
+            }
         );
         return ResponseEntity.ok(parkingBoys);
     }
 
     @CrossOrigin
-    @GetMapping(value ="/search")
+    @GetMapping(value = "/search")
     public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoysBy(
-            @RequestParam(value = "q") String expect) {
-//        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findByRole(RoleName.ROLE_PARKING_CLERK.toString())
+        @RequestParam(value = "q") String expect) {
         List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
-                .stream()
-                .filter(parkingBoy -> findContain(parkingBoy, expect))
-                .map(EmployeeDetailResponse::create)
-                .collect(Collectors.toList());
-        parkingBoys.forEach(parkingBoy -> {appendParkingLot(parkingBoy); }
+            .stream()
+            .filter(parkingBoy -> findContain(parkingBoy, expect))
+            .filter(parkingBoy -> isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
+            .map(EmployeeDetailResponse::create)
+            .collect(Collectors.toList());
+        parkingBoys.forEach(parkingBoy -> {
+                appendParkingLot(parkingBoy);
+            }
         );
         return ResponseEntity.ok(parkingBoys);
     }
 
-    private boolean findContain(Employee employee, String expect){
-        String dataCollection = employee.getEmail()+employee.getName()+employee.getPhone()+employee.getStatus()+employee.getUsername()+"/"+employee.getId();
+    private boolean isRole(Employee employee, RoleName roleName) {
+        return employee.getAuthorities().stream().anyMatch(auth -> auth.getName().equals(roleName));
+    }
+
+    private boolean findContain(Employee employee, String expect) {
+        String dataCollection =
+            employee.getEmail() + employee.getName() + employee.getPhone() + employee.getStatus() + employee.getUsername() + "/" + employee.getId();
         return dataCollection.toUpperCase().contains(expect.toUpperCase());
     }
 
-
     private void appendParkingLot(EmployeeDetailResponse parkingBoy) {
         List<ParkingLotResponse> parkingLots = parkingLotRepository
-                .findByEmployeeId(parkingBoy.getEmployeeId()).stream()
-                .map(ParkingLotResponse::create)
-                .collect(Collectors.toList());
+            .findByEmployeeId(parkingBoy.getEmployeeId()).stream()
+            .map(ParkingLotResponse::create)
+            .collect(Collectors.toList());
         parkingBoy.setParkingLotResponses(parkingLots);
         parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
     }
 
-
-
     @CrossOrigin
-    @GetMapping(value ="/{employeeId}")
+    @GetMapping(value = "/{employeeId}")
     public ResponseEntity<Object> getParkingBoy(@PathVariable Long employeeId) {
         Optional<Employee> employee = employeeRepository.findById(employeeId);
         if (!employee.isPresent()) {
@@ -103,8 +111,6 @@ public class ParkingBoyResource {
     @CrossOrigin
     @GetMapping(value = "/username/{username}")
     public ResponseEntity<Object> getParkingBoyByUsername(@PathVariable String username) {
-        // To do....
-//        final Employee employee = employeeRepository.findByUsernameAndRole(username, RoleName.ROLE_PARKING_CLERK.toString());
         final Employee employee = employeeRepository.findByUsername(username);
         if (employee == null) {
             return ResponseEntity.status(404).body("employee username: " + username + " not found");
@@ -116,6 +122,8 @@ public class ParkingBoyResource {
     @PostMapping(consumes = {"application/json"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
+        employee.setPassword(bCryptPasswordEncoder.encode(employee.getPassword()));
+        employee.setAuthorities(employee.getAuthorities());
         if (employee.getStatus() != null && !isValidStatus(employee.getStatus())) {
             return ResponseEntity.status(400).body("status: " + employee.getStatus() + " not found/support");
         }
