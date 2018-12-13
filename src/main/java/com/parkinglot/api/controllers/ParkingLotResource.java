@@ -7,6 +7,7 @@ import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
 import com.parkinglot.api.domain.ParkingLotStatus;
 import com.parkinglot.api.models.ParkingLotResponse;
+import com.parkinglot.api.services.ParkingLotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,9 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.*;
 import java.util.*;
-import java.util.stream.*;
-
-import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PARKED;
 
 @RestController
 @RequestMapping("/parkinglots")
@@ -37,49 +35,27 @@ public class ParkingLotResource {
     private ParkingLotRepository parkingLotRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
-
+    @Autowired
+    private ParkingLotService parkingLotService;
     @CrossOrigin
     @GetMapping
     public ResponseEntity<List<ParkingLotResponse>> getAvailableParkingLots(@RequestParam(value = "employeeId", required = false) Long employeeId) {
         List<ParkingLotResponse> parkingLots;
         if (employeeId == null) {
-            parkingLots = parkingLotRepository
-                .findAll().stream()
-                .map(ParkingLotResponse::create)
-                .collect(Collectors.toList());
+            parkingLots = parkingLotService.getAllParkingLots();
         } else {
-            parkingLots = parkingLotRepository
-                .findByEmployeeId(employeeId).stream()
-                .filter(parkingLot -> hasSpace(parkingLot))
-                .map(ParkingLotResponse::create)
-                .collect(Collectors.toList());
+            parkingLots = parkingLotService.getHasSpaceParkingLotsByEmployeeId(employeeId);
         }
-        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+        parkingLotService.setParkedCountToParkingLots(parkingLots);
         return ResponseEntity.ok(parkingLots);
     }
 
     @CrossOrigin
     @GetMapping(value = "/search")
     public ResponseEntity<List<ParkingLotResponse>> searchParkingLot(@RequestParam(value = "q") String expect) {
-        List<ParkingLotResponse> parkingLots = parkingLotRepository
-                .findAll().stream()
-                .filter(parkingLot -> findContain(parkingLot, expect))
-                .map(ParkingLotResponse::create)
-                .collect(Collectors.toList());
-        parkingLots.forEach(parkingLot -> parkingLot.setParkedCount(getCarCountInParkingLot(parkingLot.getParkingLotId())));
+        List<ParkingLotResponse> parkingLots = parkingLotService.searchParkingLots(expect);
+        parkingLotService.setParkedCountToParkingLots(parkingLots);
         return ResponseEntity.ok(parkingLots);
-    }
-
-    private boolean findContain(ParkingLot parkingLot, String expect){
-        String dataCollection = parkingLot.getParkingLotName() +parkingLot.getParkingLotStatus() +"/"+parkingLot.getId()+"/"+parkingLot.getCapacity();
-        if(parkingLot.getEmployeeId()!=null){
-            Optional<Employee> opEmployee = employeeRepository.findById(parkingLot.getEmployeeId());
-            if(opEmployee.isPresent()) {
-                Employee employee = opEmployee.get();
-                dataCollection += employee.getEmail()+employee.getName()+employee.getPhone()+employee.getStatus()+employee.getUsername()+"/"+employee.getId();
-            }
-        }
-        return dataCollection.toUpperCase().contains(expect.toUpperCase());
     }
 
     @CrossOrigin
@@ -132,17 +108,11 @@ public class ParkingLotResource {
         return ResponseEntity.badRequest().build();
     }
 
-    private int getCarCountInParkingLot(Long parkingLotId) {
-        return orderRepository
-            .findByParkingLotIdAndOrderStatus(parkingLotId, ORDER_STATUS_PARKED)
-            .size();
-    }
-
     @CrossOrigin
     @PutMapping(value = "/{parkingLotId}/status/{status}")
     public ResponseEntity<Object> updateStatus(@PathVariable Long parkingLotId, @PathVariable String status) {
         Optional<ParkingLot> parkingLot = parkingLotRepository.findById(parkingLotId);
-        if (!isValidStatus(status)) {
+        if (!parkingLotService.isValidStatus(status)) {
             return ResponseEntity.status(400).body("parking lot status: " + status + " not found/support");
         }
         if (!parkingLot.isPresent()) {
@@ -154,15 +124,7 @@ public class ParkingLotResource {
         parkingLot.get().setParkingLotStatus(status);
         parkingLotRepository.save(parkingLot.get());
         ParkingLotResponse parkingLotResponse = ParkingLotResponse.create(parkingLot.get());
-        parkingLotResponse.setParkedCount(getCarCountInParkingLot(parkingLotResponse.getParkingLotId()));
+        parkingLotResponse.setParkedCount(parkingLotService.getCarCountInParkingLot(parkingLotResponse.getParkingLotId()));
         return ResponseEntity.ok(parkingLotResponse);
-    }
-
-    boolean isValidStatus(String status) {
-        return Arrays.stream(ParkingLotStatus.values()).anyMatch((t) -> t.name().equals(status));
-    }
-
-    private boolean hasSpace(ParkingLot parkingLot) {
-        return parkingLot.getCapacity() > getCarCountInParkingLot(parkingLot.getId());
     }
 }
