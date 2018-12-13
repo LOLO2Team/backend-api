@@ -3,8 +3,9 @@ package com.parkinglot.api;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.user.RoleName;
+import com.parkinglot.api.models.EmployeeDetailResponse;
 import com.parkinglot.api.models.EmployeeResponse;
+import com.parkinglot.api.user.RoleName;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import javax.persistence.EntityManager;
 import java.util.*;
 
 import static com.parkinglot.api.WebTestUtil.getContentAsObject;
+import static com.parkinglot.api.WebTestUtil.getTestingParkingBoy;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -43,7 +45,8 @@ public class ParkingBoyTests {
     @Test
     public void should_get_parking_boys() throws Exception {
         // Given
-        final Employee boy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy("newBoy"));
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
@@ -53,10 +56,10 @@ public class ParkingBoyTests {
         // Then
         assertEquals(200, result.getResponse().getStatus());
 
-        final EmployeeResponse[] parkingBoys = getContentAsObject(result, EmployeeResponse[].class);
+        final EmployeeDetailResponse[] parkingBoys = getContentAsObject(result, EmployeeDetailResponse[].class);
 
         assertEquals(1, parkingBoys.length);
-        assertEquals("boy", parkingBoys[0].getName());
+        assertEquals("newBoy", parkingBoys[0].getName());
     }
 
     @Test
@@ -64,10 +67,11 @@ public class ParkingBoyTests {
         //Given A parking boy with employeeID too long
         final String employeeName =
             "IdThatISTooLonggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
-        Employee employee = new Employee(employeeName, RoleName.ROLE_PARKING_CLERK);
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy(employeeName));
         //When save into repository should throw exception
         AssertHelper.assertThrows(Exception.class, () -> {
-            employeeRepository.save(employee);
+            employeeRepository.save(newParkingBoy);
             employeeRepository.flush();
         });
     }
@@ -102,25 +106,6 @@ public class ParkingBoyTests {
         final EmployeeResponse parkingBoy = EmployeeResponse.create(actualBoy.get());
 
         assertEquals(1, parkingBoys.size());
-        assertEquals("boy", parkingBoy.getName());
+        assertEquals("newBoy", parkingBoy.getName());
     }
-
-    //    @Test
-    //    public void should_post_return_404() throws Exception {
-    //        // Given
-    //        String json = "{\"WrongName\" : \"test123\"}";
-    //
-    //        // When
-    //        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-    //                .post("/parkingboys")
-    //                .contentType(MediaType.APPLICATION_JSON)
-    //                .content(json))
-    //                .andReturn();
-    //
-    //        // Then
-    //        AssertHelper.assertThrows(Exception.class, () -> {
-    //            employeeRepository.save(parkingBoy);
-    //            employeeRepository.flush();
-    //        });
-    //    }
 }

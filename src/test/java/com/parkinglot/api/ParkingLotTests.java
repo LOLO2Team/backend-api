@@ -4,7 +4,6 @@ import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.models.ParkingLotResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,7 @@ import javax.persistence.EntityManager;
 import java.util.*;
 
 import static com.parkinglot.api.WebTestUtil.getContentAsObject;
+import static com.parkinglot.api.WebTestUtil.getTestingParkingBoy;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -43,13 +43,13 @@ public class ParkingLotTests {
     private MockMvc mvc;
 
     String getAccessToken() throws Exception {
-        MvcResult signUpResult = mvc.perform(post("/users/sign-up")
+        MvcResult signUpResult = mvc.perform(post("/employees/sign-up")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .content("{\"name\":\"tester\",\"username\":\"tester\",\"password\":\"admin\",\"email\":\"mail@mail.com\",\"phone\":\"12945678\",\"authorities\":[{\"name\":\"ROLE_PARKING_CLERK\"}]}"))
             .andReturn();
         MvcResult loginResult = mvc.perform(post("/login")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .content("{\"username\":\"tester\", \"password\":\"admin\"}"))
             .andReturn();
         return loginResult.getResponse().getHeader("Authorization");
     }
@@ -78,8 +78,8 @@ public class ParkingLotTests {
     @Test
     public void should_assign_parking_lot_and_get_parking_available_parking_lots_by_employee_id() throws Exception {
         // Given
-        final Employee employee = new Employee("TestBoy", RoleName.ROLE_PARKING_CLERK);
-        employeeRepository.save(employee);
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy("newBoy"));
         employeeRepository.flush();
         final ParkingLot testBoyParkingLot = parkingLotRepository.save(new ParkingLot("TestBoy parking lot", 10));
         final ParkingLot otherParkingLot = parkingLotRepository.save(new ParkingLot("Parking lot of other parking boy", 10));
@@ -88,11 +88,11 @@ public class ParkingLotTests {
 
         // When
         final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
-            .put("/parkinglots/" + testBoyParkingLot.getId() + "/employeeId/" + employee.getId())
+            .put("/parkinglots/" + testBoyParkingLot.getId() + "/employeeId/" + newParkingBoy.getId())
             .header("Authorization", token))
             .andReturn();
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
-            .get("/parkinglots?employeeId=" + employee.getId())
+            .get("/parkinglots?employeeId=" + newParkingBoy.getId())
             .header("Authorization", token))
             .andReturn();
 
@@ -104,35 +104,6 @@ public class ParkingLotTests {
         assertEquals("TestBoy parking lot", parkingLotResponses[0].getParkingLotName());
         assertEquals(10, parkingLotResponses[0].getCapacity());
     }
-
-//    @Test
-//    public void should_not_get_parking_lots_by_employee_id_if_parking_lot_is_full() throws Exception {
-//        // Given
-//        final Employee employee = new Employee("TestBoy", RoleName.ROLE_PARKING_CLERK);
-//        employeeRepository.save(employee);
-//        employeeRepository.flush();
-//        final ParkingLot testBoyParkingLot = parkingLotRepository.save(new ParkingLot("TestBoy parking lot", 0));
-//        parkingLotRepository.flush();
-//        String token = getAccessToken();
-//
-//        // When
-//        final MvcResult putResult = mvc.perform(MockMvcRequestBuilders
-//            .put("/parkinglots/" + testBoyParkingLot.getId() + "/employeeId/" + employee.getId())
-//            .header("Authorization", token))
-//            .andReturn();
-//        final MvcResult result = mvc.perform(MockMvcRequestBuilders
-//            .get("/parkinglots?employeeId=" + employee.getId())
-//            .header("Authorization", token))
-//            .andReturn();
-//
-//        // Then
-//        final ParkingLotResponse[] parkingLotResponses = getContentAsObject(result, ParkingLotResponse[].class);
-//        assertEquals(201, putResult.getResponse().getStatus());
-//        assertEquals(200, result.getResponse().getStatus());
-//        assertEquals(1, parkingLotResponses.length);
-//        assertEquals("TestBoy parking lot", parkingLotResponses[0].getParkingLotName());
-//        assertEquals(10, parkingLotResponses[0].getCapacity());
-//    }
 
     @Test
     public void should_post_parking_lot_to_DB() throws Exception {

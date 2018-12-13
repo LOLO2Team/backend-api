@@ -1,14 +1,27 @@
 package com.parkinglot.api.domain;
 
 import com.parkinglot.api.user.Role;
+import com.parkinglot.api.user.RoleName;
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
+import java.util.*;
+import java.util.stream.*;
 
 @Entity
 @Table(name = "employee")
@@ -45,25 +58,30 @@ public class Employee {
 
     //---------------------------------------------------
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinTable(
-            name = "EMPLOYEE_AUTHORITY",
-            joinColumns = {@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
+        name = "EMPLOYEE_AUTHORITY",
+        joinColumns = {@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "ID")},
+        inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private List<Role> authorities;
 
-    @Column(name = "STATUS" ,nullable = false)
+    @Column(name = "STATUS", nullable = false)
     private String status = "WORKING";
 
     protected Employee() {
     }
 
-    public Employee(String name, String username, String email, String password, List<Role> authorities) {
+    public Employee(String name, String username, String email, String password, List<RoleName> authorities) {
         this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
+        this.phone = "no one care";
+        this.authorities = authorities.stream().map(roleName -> {
+            Role role = new Role();
+            role.setName(roleName);
+            return role;
+        }).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -110,9 +128,13 @@ public class Employee {
         this.password = password;
     }
 
-    public String getStatus() { return status; }
+    public String getStatus() {
+        return status;
+    }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public List<Role> getAuthorities() {
         return authorities;

@@ -6,7 +6,6 @@ import com.parkinglot.api.domain.Order;
 import com.parkinglot.api.domain.OrderRepository;
 import com.parkinglot.api.domain.ParkingLot;
 import com.parkinglot.api.domain.ParkingLotRepository;
-import com.parkinglot.api.user.RoleName;
 import com.parkinglot.api.models.OrderResponse;
 import com.parkinglot.api.models.OrderTicketResponse;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import javax.persistence.EntityManager;
 
 import static com.parkinglot.api.WebTestUtil.getContentAsObject;
+import static com.parkinglot.api.WebTestUtil.getTestingParkingBoy;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,13 +49,13 @@ public class OrderResourceTests {
     private MockMvc mvc;
 
     String getAccessToken() throws Exception {
-        MvcResult signUpResult = mvc.perform(post("/users/sign-up")
+        MvcResult signUpResult = mvc.perform(post("/employees/sign-up")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .content("{\"name\":\"tester\",\"username\":\"tester\",\"password\":\"admin\",\"email\":\"mail@mail.com\",\"phone\":\"12945678\",\"authorities\":[{\"name\":\"ROLE_PARKING_CLERK\"}]}"))
             .andReturn();
         MvcResult loginResult = mvc.perform(post("/login")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"username\":\"tester\", \"password\":\"pass\"}"))
+            .content("{\"username\":\"tester\", \"password\":\"admin\"}"))
             .andReturn();
         return loginResult.getResponse().getHeader("Authorization");
     }
@@ -126,7 +126,8 @@ public class OrderResourceTests {
     public void should_update_status_from_pending_to_parking_and_assign_the_parking_boy_to_order() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy("newBoy"));
 
         // When
         final MvcResult result = mvc.perform(MockMvcRequestBuilders
@@ -147,7 +148,8 @@ public class OrderResourceTests {
     public void should_update_status_from_parking_to_parked_and_assign_the_parking_lot_id_to_order() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy("newBoy"));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
         String token = getAccessToken();
 
@@ -178,7 +180,8 @@ public class OrderResourceTests {
     public void should_update_status_from_parked_to_parking() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy("newBoy"));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
         String token = getAccessToken();
 
@@ -211,7 +214,8 @@ public class OrderResourceTests {
     public void should_update_status_from_fetching_to_fetched() throws Exception {
         // Given
         Order newOrder = orderRepository.save(new Order("car"));
-        Employee newParkingBoy = employeeRepository.save(new Employee("boy", RoleName.ROLE_PARKING_CLERK));
+        Employee newParkingBoy =
+            employeeRepository.save(getTestingParkingBoy("newBoy"));
         ParkingLot newParkingLot = parkingLotRepository.save(new ParkingLot("lot", 10));
         String token = getAccessToken();
 
