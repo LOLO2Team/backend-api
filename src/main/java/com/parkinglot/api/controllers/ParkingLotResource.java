@@ -83,7 +83,7 @@ public class ParkingLotResource {
     }
 
     @CrossOrigin
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @PutMapping(value = "/{parkingLotId}/employeeId/{employeeId}", produces = {"application/json"})
     public ResponseEntity<String> assignParkingLot(@PathVariable Long parkingLotId, @PathVariable Long employeeId) {
 
@@ -106,7 +106,7 @@ public class ParkingLotResource {
     }
 
     @CrossOrigin
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @DeleteMapping(value = "/{parkingLotId}/employeeId", produces = {"application/json"})
     public ResponseEntity<String> removeAssignedParkingLot(@PathVariable Long parkingLotId) {
 
