@@ -2,6 +2,7 @@ package com.parkinglot.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.parkinglot.api.domain.Employee;
+import com.parkinglot.api.user.Role;
 
 import java.util.*;
 
@@ -12,16 +13,25 @@ public class EmployeeResponse {
     private String email;
     private String phone;
     private String status;
-    private List<String> roles;
+    @JsonIgnore
+    private List<Role> roles;
 
-    public List<String> getRoles() {
+    private List<String> rolesList;
+
+    public List<String> getRolesList() {
+        return rolesList;
+    }
+
+    public void setRolesList(List<String> rolesList) {
+        this.rolesList = rolesList;
+    }
+
+    public List<Role> getRoles() {
         return roles;
     }
-
-    public void setRoles(List<String> role) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-
 
     public Long getEmployeeId() {
         return employeeId;
@@ -67,9 +77,10 @@ public class EmployeeResponse {
 
     public void setStatus(String status) { this.status = status; }
 
-    public static EmployeeResponse create(Long employeeId, String name, String username, String phone, String email, String status) {
+    public static EmployeeResponse create(Long employeeId, String name, String username, String phone, String email, String status, List<Role> roles) {
         Objects.requireNonNull(employeeId);
         Objects.requireNonNull(name);
+        Objects.requireNonNull(roles);
 
         final EmployeeResponse response = new EmployeeResponse();
         response.setEmployeeId(employeeId);
@@ -79,11 +90,18 @@ public class EmployeeResponse {
         response.setEmail(email);
         response.setStatus(status);
 
+        List<String> roleList = new ArrayList<>();
+        for (Role role : roles) {
+            roleList.add(role.getName().toString());
+        }
+        response.setRoles(roles);
+        response.setRolesList(roleList);
+
         return response;
     }
 
     public static EmployeeResponse create(Employee entity) {
-        return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(), entity.getStatus());
+        return create(entity.getId(), entity.getName(), entity.getUsername(), entity.getPhone(), entity.getEmail(), entity.getStatus(),entity.getAuthorities());
     }
 
     @JsonIgnore

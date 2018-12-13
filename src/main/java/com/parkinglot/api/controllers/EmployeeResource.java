@@ -1,6 +1,7 @@
 package com.parkinglot.api.controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
@@ -59,7 +60,7 @@ public class EmployeeResource {
     }
 
     @CrossOrigin
-    @GetMapping(value = "/username/{username}")
+    @GetMapping(value = "/{username}")
     public ResponseEntity<Object> getByEmployeeByUsername(@PathVariable String username) {
         final Employee employee = employeeRepository.findByUsername(username);
         if (employee == null) {
@@ -69,7 +70,7 @@ public class EmployeeResource {
     }
 
     @CrossOrigin
-    @GetMapping(value = "/username/{username}/roles", produces = {"application/json"})
+    @GetMapping(value = "/{username}/roles", produces = {"application/json"})
     public ResponseEntity<Object> getRoleByEmployeeByUsername(@PathVariable String username) {
         final Employee employee = employeeRepository.findByUsername(username);
         if (employee == null) {
