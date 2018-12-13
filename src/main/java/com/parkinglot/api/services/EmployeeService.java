@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.*;
 
-import static com.parkinglot.api.controllers.OrderResource.ORDER_STATUS_PARKED;
-
 @Service
 public class EmployeeService {
 
@@ -86,7 +84,6 @@ public class EmployeeService {
         List<EmployeeDetailResponse> employees = employeeRepository.findAll()
                 .stream()
                 .filter(parkingBoy -> findContain(parkingBoy, expect))
-                .filter(parkingBoy -> isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
                 .map(EmployeeDetailResponse::create)
                 .collect(Collectors.toList());
         employees.forEach(parkingBoy -> {
