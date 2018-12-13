@@ -47,19 +47,28 @@ public class ParkingBoyResource {
 
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<EmployeeDetailResponse>> getParkingBoys(
-        @RequestParam(value = "status", required = false) String status) {
-        List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
-            .stream()
-            .filter(order -> status == null || order.getStatus().equals(status))
-            .filter(parkingBoy -> isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
-            .map(EmployeeDetailResponse::create)
-            .collect(Collectors.toList());
-        parkingBoys.forEach(parkingBoy -> {
-                appendParkingLot(parkingBoy);
+    public ResponseEntity<Object> getParkingBoys(
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "username", required = false) String username) {
+        if(username!=null){
+            final Employee employee = employeeRepository.findByUsername(username);
+            if (employee == null) {
+                return ResponseEntity.status(404).body("employee username: " + username + " not found");
             }
-        );
-        return ResponseEntity.ok(parkingBoys);
+            return ResponseEntity.ok(EmployeeResponse.create(employee));
+        }else {
+            List<EmployeeDetailResponse> parkingBoys = employeeRepository.findAll()
+                .stream()
+                .filter(order -> status == null || order.getStatus().equals(status))
+                .filter(parkingBoy -> isRole(parkingBoy, RoleName.ROLE_PARKING_CLERK))
+                .map(EmployeeDetailResponse::create)
+                .collect(Collectors.toList());
+            parkingBoys.forEach(parkingBoy -> {
+                    appendParkingLot(parkingBoy);
+                }
+            );
+            return ResponseEntity.ok(parkingBoys);
+        }
     }
 
     @CrossOrigin

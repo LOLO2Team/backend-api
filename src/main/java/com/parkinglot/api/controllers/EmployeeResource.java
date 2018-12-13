@@ -1,7 +1,6 @@
 package com.parkinglot.api.controllers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.parkinglot.api.domain.Employee;
 import com.parkinglot.api.domain.EmployeeRepository;
 import com.parkinglot.api.domain.ParkingLotRepository;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.*;
@@ -36,7 +36,7 @@ public class EmployeeResource {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public EmployeeResource(EmployeeRepository employeeRepository,
-                          BCryptPasswordEncoder bCryptPasswordEncoder) {
+        BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.employeeRepository = employeeRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -51,12 +51,21 @@ public class EmployeeResource {
 
     @CrossOrigin
     @GetMapping
-    public ResponseEntity<List<EmployeeResponse>> getAll() {
-        final List<EmployeeResponse> Employees = employeeRepository.findAll()
-            .stream()
-            .map(EmployeeResponse::create)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(Employees);
+    public ResponseEntity<Object> getEmployee(
+        @RequestParam(value = "username", required = false) String username) {
+        if (username != null) {
+            final Employee employee = employeeRepository.findByUsername(username);
+            if (employee == null) {
+                return ResponseEntity.status(404).body("employee username: " + username + " not found");
+            }
+            return ResponseEntity.ok(EmployeeResponse.create(employee));
+        } else {
+            final List<EmployeeResponse> Employees = employeeRepository.findAll()
+                .stream()
+                .map(EmployeeResponse::create)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(Employees);
+        }
     }
 
     @CrossOrigin
