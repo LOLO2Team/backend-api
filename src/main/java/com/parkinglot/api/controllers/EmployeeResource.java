@@ -94,7 +94,7 @@ public class EmployeeResource {
 
     @CrossOrigin
     @PostMapping(consumes = {"application/json"})
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_HR')")
     public ResponseEntity<Object> add(@RequestBody Employee employee) {
         employee.setPassword(bCryptPasswordEncoder.encode(employee.getPassword()));
         employee.setAuthorities(employee.getAuthorities());
