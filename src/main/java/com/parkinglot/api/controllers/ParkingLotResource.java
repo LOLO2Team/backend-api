@@ -118,7 +118,7 @@ public class ParkingLotResource {
         if (!parkingLot.isPresent()) {
             return ResponseEntity.status(404).body("parking lot not found");
         }
-        if (status.equals(ParkingLotStatus.OPEN.name()) && parkingLot.get().getEmployeeId()!=null) {
+        if (status.equals(ParkingLotStatus.CLOSED.name()) && parkingLot.get().getEmployeeId()!=null) {
             return ResponseEntity.status(409).body("this parking lot is assigned to parking boy: "+parkingLot.get().getEmployeeId());
         }
         parkingLot.get().setParkingLotStatus(status);
