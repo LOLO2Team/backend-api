@@ -31,9 +31,9 @@ INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, emp
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99998, 35466842, 'fetching', 0, 0);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99999, 12367764, 'fetched', 0, 0);
 
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99912, 45638921, 'parking', 0, 0);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99913, 34636789, 'parking', 9001, 0);
-INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99914, 23474257, 'parking', 9002, 9994);
+INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99912, 45638921, 'parking', null, 0);
+INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99913, 34636789, 'parking', null, 0);
+INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99914, 23474257, 'parking', null, 9994);
 
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99100, 'PROCAR', 'pending', null, null);
 INSERT INTO parking_order (id, vehicle_number, order_status, parking_lot_id, employee_id) VALUES (99101, 'HELLO', 'pending', null, null);
